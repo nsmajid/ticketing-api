@@ -1,0 +1,51 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/frankenphp/Dockerfile
+
+    container_name: ticketing-app
+
+    ports:
+      - "8000:80"
+
+    volumes:
+      - ./src:/app
+      - ./docker/frankenphp/Caddyfile:/etc/frankenphp/Caddyfile
+
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+
+    depends_on:
+      - redis
+      - minio
+
+  redis:
+    image: redis:7-alpine
+    container_name: ticketing-redis
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: ticketing-mailpit
+
+    ports:
+      - "8025:8025"
+
+  minio:
+    image: minio/minio
+    container_name: ticketing-minio
+
+    command: server /data --console-address ":9001"
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: secret123
+
+    volumes:
+      - ./storage/minio:/data

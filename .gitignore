@@ -1,0 +1,9 @@
+storage/minio/
+
+docker-data/
+
+.DS_Store
+
+.idea/
+
+.vscode/
