@@ -8,9 +8,13 @@ use App\User\Requests\StoreUserRequest;
 use App\User\Requests\UpdateUserRequest;
 use App\User\Resources\UserResource;
 use App\User\Services\UserService;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+
+class UserController extends Controller implements HasMiddleware
 {
     public function index()
     {
@@ -51,5 +55,27 @@ class UserController extends Controller
         return new UserResource(
             $user
         );
+    }
+
+    public static function middleware(): array
+    {
+        return [
+
+            new Middleware(
+                'permission:user.view',
+                only: ['index', 'show']
+            ),
+
+            new Middleware(
+                'permission:user.create',
+                only: ['store']
+            ),
+
+            new Middleware(
+                'permission:user.update',
+                only: ['update']
+            ),
+
+        ];
     }
 }

@@ -434,6 +434,119 @@ class PermissionSeeder extends Seeder
                 'description' => 'Can view audit trail',
                 'sort_order' => 1100,
             ],
+
+            /*  
+    |--------------------------------------------------------------------------
+    | Ticket Category
+    |----------------------------------------------------------------------
+    */
+
+            [
+                'name' => 'ticket-category.view',
+                'label' => 'View Ticket Category',
+                'group' => 'Master Data',
+                'description' => 'Can view ticket categories',
+                'sort_order' => 410,
+            ],
+
+            [
+                'name' => 'ticket-category.create',
+                'label' => 'Create Ticket Category',
+                'group' => 'Master Data',
+                'description' => 'Can create ticket categories',
+                'sort_order' => 411,
+            ],
+
+            [
+                'name' => 'ticket-category.update',
+                'label' => 'Update Ticket Category',
+                'group' => 'Master Data',
+                'description' => 'Can update ticket categories',
+                'sort_order' => 412,
+            ],
+
+            [
+                'name' => 'ticket-category.delete',
+                'label' => 'Delete Ticket Category',
+                'group' => 'Master Data',
+                'description' => 'Can delete ticket categories',
+                'sort_order' => 413,
+            ],
+            /*  
+    |-----------------------------------------------------------------------
+    | Ticket Priority
+    |----------------------------------------------------------------------
+    */
+            [
+                'name' => 'ticket-priority.view',
+                'label' => 'View Ticket Priority',
+                'group' => 'Master Data',
+                'description' => 'Can view ticket priorities',
+                'sort_order' => 420,
+            ],
+
+            [
+                'name' => 'ticket-priority.create',
+                'label' => 'Create Ticket Priority',
+                'group' => 'Master Data',
+                'description' => 'Can create ticket priorities',
+                'sort_order' => 421,
+            ],
+
+            [
+                'name' => 'ticket-priority.update',
+                'label' => 'Update Ticket Priority',
+                'group' => 'Master Data',
+                'description' => 'Can update ticket priorities',
+                'sort_order' => 422,
+            ],
+
+            [
+                'name' => 'ticket-priority.delete',
+                'label' => 'Delete Ticket Priority',
+                'group' => 'Master Data',
+                'description' => 'Can delete ticket priorities',
+                'sort_order' => 423,
+            ],
+
+            /*  
+    |-----------------------------------------------------------------------
+    | Ticket Status
+    |----------------------------------------------------------------------
+    */
+
+            [
+                'name' => 'ticket-status.view',
+                'label' => 'View Ticket Status',
+                'group' => 'Master Data',
+                'description' => 'Can view ticket statuses',
+                'sort_order' => 430,
+            ],
+
+            [
+                'name' => 'ticket-status.create',
+                'label' => 'Create Ticket Status',
+                'group' => 'Master Data',
+                'description' => 'Can create ticket statuses',
+                'sort_order' => 431,
+            ],
+
+            [
+                'name' => 'ticket-status.update',
+                'label' => 'Update Ticket Status',
+                'group' => 'Master Data',
+                'description' => 'Can update ticket statuses',
+                'sort_order' => 432,
+            ],
+
+            [
+                'name' => 'ticket-status.delete',
+                'label' => 'Delete Ticket Status',
+                'group' => 'Master Data',
+                'description' => 'Can delete ticket statuses',
+                'sort_order' => 433,
+            ],
+
         ];
 
         foreach ($permissions as $permission) {
