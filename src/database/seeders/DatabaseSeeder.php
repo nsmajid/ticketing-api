@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TicketCategorySeeder::class,
             TicketPrioritySeeder::class,
-            TicketStatusSeeder::class
+            TicketStatusSeeder::class,
+            SlaRuleSeeder::class
         ]);
     }
 }

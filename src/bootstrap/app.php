@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -9,6 +10,8 @@ use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -89,6 +92,49 @@ return Application::configure(basePath: dirname(__DIR__))
                 'success' => false,
                 'message' => 'You do not have permission to perform this action.'
             ], 403);
+        });
+
+        $exceptions->render(function (
+            QueryException $e,
+            $request
+        ) {
+
+            $uniqueMessages = [
+                'users_email_unique'
+                => 'Email already exists.',
+
+                'users_username_unique'
+                => 'Username already exists.',
+
+                'ticket_categories_name_unique'
+                => 'Ticket Category already exists.',
+
+                'ticket_priorities_name_unique'
+                => 'Ticket Priority already exists.',
+
+                'ticket_statuses_code_unique'
+                => 'Ticket Status code already exists.',
+
+                'sla_rules_ticket_category_id_ticket_priority_id_unique'
+                => 'SLA Rule for this category and priority already exists.',
+
+            ];
+
+            if ($e->getCode() == 23000) {
+                foreach ($uniqueMessages as $index => $message) {
+
+                    if (str_contains($e->getMessage(), $index)) {
+
+                        return response()->json([
+
+                            'success' => false,
+
+                            'message' => $message,
+
+                        ], 409);
+                    }
+                }
+            }
         });
 
         $exceptions->render(
