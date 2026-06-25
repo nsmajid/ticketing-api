@@ -35,4 +35,6 @@ class StoreTicketCategoryRequest extends FormRequest
             ],
         ];
     }
+
+    
 }

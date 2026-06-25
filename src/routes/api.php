@@ -1,6 +1,7 @@
 <?php
 
 use App\Auth\Controllers\AuthController;
+use App\Sla\Controllers\SlaRuleController;
 use App\TicketCategory\Controllers\TicketCategoryController;
 use App\TicketPriority\Controllers\TicketPriorityController;
 use App\TicketStatus\Controllers\TicketStatusController;
@@ -19,4 +20,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('ticket-categories', TicketCategoryController::class);
     Route::apiResource('ticket-priorities', TicketPriorityController::class);
     Route::apiResource('ticket-statuses', TicketStatusController::class);
+    Route::apiResource('sla-rules',SlaRuleController::class);
 });
