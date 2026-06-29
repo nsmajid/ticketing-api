@@ -3,6 +3,7 @@
 namespace App\Shared\Responses;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ApiResponse
 {
@@ -19,16 +20,47 @@ class ApiResponse
         ], $status);
     }
 
-    public static function error(
-        string $message,
-        int $status = 400,
-        mixed $errors = null
+    public static function paginated(
+        AnonymousResourceCollection $resource,
+        string $message = 'Success.'
     ): JsonResponse {
 
+        $response = $resource->response()->getData(true);
+
         return response()->json([
+
+            'success' => true,
+
+            'message' => $message,
+
+            'data' => $response['data'],
+
+            'meta' => $response['meta'],
+
+            'links' => $response['links'],
+
+        ]);
+    }
+
+
+    public static function error(
+        string $message = 'Error.',
+        mixed $errors = null,
+        int $status = 400
+    ): JsonResponse {
+
+        $response = [
             'success' => false,
             'message' => $message,
-            'errors' => $errors,
-        ], $status);
+        ];
+
+        if (!is_null($errors)) {
+            $response['errors'] = $errors;
+        }
+
+        return response()->json(
+            $response,
+            $status
+        );
     }
 }

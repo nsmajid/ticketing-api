@@ -4,22 +4,32 @@ namespace App\TicketCategory\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\TicketCategory;
+use App\Shared\Responses\ApiResponse;
 use App\TicketCategory\Requests\StoreTicketCategoryRequest;
 use App\TicketCategory\Requests\UpdateTicketCategoryRequest;
 use App\TicketCategory\Resources\TicketCategoryResource;
 use App\TicketCategory\Services\TicketCategoryService;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
 class TicketCategoryController extends Controller implements HasMiddleware
 {
-    public function index()
-    {
-        return TicketCategoryResource::collection(
 
-            TicketCategory::query()
-                ->orderBy('sort_order')
-                ->paginate()
+    public function __construct(
+        protected TicketCategoryService $service
+    ) {}
+    public function index(Request $request)
+    {
+        $categories = $this->service->index($request);
+
+        return ApiResponse::paginated(
+
+            TicketCategoryResource::collection(
+                $categories
+            ),
+
+            'Ticket categories retrieved successfully.'
 
         );
     }
@@ -27,51 +37,57 @@ class TicketCategoryController extends Controller implements HasMiddleware
     public function show(
         TicketCategory $ticketCategory
     ) {
-        return new TicketCategoryResource(
-            $ticketCategory
+        return ApiResponse::success(
+            new TicketCategoryResource(
+                $this->service->show(
+                    $ticketCategory
+                )
+            ),
+            'Ticket category retrieved successfully.'
         );
     }
 
     public function store(
         StoreTicketCategoryRequest $request,
-        TicketCategoryService $service
     ) {
-        return new TicketCategoryResource(
 
-            $service->create(
-                $request->validated()
-            )
+        $ticketCategory = $this->service->create(
+            $request->validated()
+        );
 
+        return ApiResponse::success(
+            new TicketCategoryResource($ticketCategory),
+            'Ticket category created successfully.',
+            201
         );
     }
 
     public function update(
         UpdateTicketCategoryRequest $request,
         TicketCategory $ticketCategory,
-        TicketCategoryService $service
     ) {
-        return new TicketCategoryResource(
 
-            $service->update(
-                $ticketCategory,
-                $request->validated()
-            )
+        $ticketCategory = $this->service->update(
+            $ticketCategory,
+            $request->validated()
+        );
 
+        return ApiResponse::success(
+            new TicketCategoryResource($ticketCategory),
+            'Ticket category updated successfully.'
         );
     }
 
     public function destroy(
         TicketCategory $ticketCategory,
-        TicketCategoryService $service
     ) {
-        $service->delete(
-            $ticketCategory
-        );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Ticket category deleted successfully',
-        ]);
+        $this->service->delete($ticketCategory);
+
+        return ApiResponse::success(
+            null,
+            'Ticket category deleted successfully.'
+        );
     }
 
     public static function middleware(): array

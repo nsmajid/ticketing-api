@@ -1,5 +1,6 @@
 <?php
 
+use App\Shared\Responses\ApiResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
@@ -37,25 +38,25 @@ return Application::configure(basePath: dirname(__DIR__))
                 ModelNotFoundException $e,
                 $request
             ) {
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data not found.'
-                ], 404);
+                return ApiResponse::error(
+                    'Data not found.',
+                    null,
+                    404
+                );
             }
         );
 
         $exceptions->render(
             function (
-                ValidationException $e,
+                ValidationException $exception,
                 $request
             ) {
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed.',
-                    'errors' => $e->errors()
-                ], 422);
+                return ApiResponse::error(
+                    'Validation failed.',
+                    $exception->errors(),
+                    422
+                );
             }
         );
 
@@ -65,22 +66,24 @@ return Application::configure(basePath: dirname(__DIR__))
                 $request
             ) {
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Endpoint not found.'
-                ], 404);
+                return ApiResponse::error(
+                    'Endpoint not found.',
+                    null,
+                    404
+                );
             }
         );
 
         $exceptions->render(function (
-            HttpException $e,
+            HttpException $exception,
             $request
         ) {
 
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage() ?: 'Request failed.'
-            ], $e->getStatusCode());
+            return ApiResponse::error(
+                $exception->getMessage() ?: 'HTTP Error.',
+                null,
+                $exception->getStatusCode()
+            );
         });
 
         $exceptions->render(function (
@@ -88,10 +91,11 @@ return Application::configure(basePath: dirname(__DIR__))
             $request
         ) {
 
-            return response()->json([
-                'success' => false,
-                'message' => 'You do not have permission to perform this action.'
-            ], 403);
+            return ApiResponse::error(
+                'You do not have permission to perform this action.',
+                null,
+                403
+            );
         });
 
         $exceptions->render(function (
@@ -125,13 +129,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
                     if (str_contains($e->getMessage(), $index)) {
 
-                        return response()->json([
-
-                            'success' => false,
-
-                            'message' => $message,
-
-                        ], 409);
+                        return ApiResponse::error(
+                            'Duplicate data found.',
+                            null,
+                            409
+                        );
                     }
                 }
             }
@@ -152,10 +154,11 @@ return Application::configure(basePath: dirname(__DIR__))
                     return null;
                 }
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Internal server error.'
-                ], 500);
+                return ApiResponse::error(
+                    'Internal server error.',
+                    null,
+                    500
+                );
             }
         );
     })->create();

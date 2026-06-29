@@ -3,21 +3,45 @@
 namespace App\Sla\Services;
 
 use App\Models\SlaRule;
-use App\Shared\Traits\EnvironmentProtection;
+use App\Shared\Services\BaseService;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class SlaRuleService
+class SlaRuleService extends BaseService
 {
-    use EnvironmentProtection;
+
+    public function index(Request $request): LengthAwarePaginator
+    {
+        return SlaRule::query()
+            ->with([
+                'category',
+                'priority',
+            ])
+            ->latest()
+            ->paginate(
+                $request->integer('per_page', 10)
+            );
+    }
+
+    public function show(
+        SlaRule $slaRule
+    ): SlaRule {
+
+        return SlaRule::query()
+            ->with([
+                'category',
+                'priority',
+            ])
+            ->findOrFail($slaRule->id);
+    }
 
     public function create(
         array $data
     ): SlaRule {
-        return DB::transaction(function () use ($data) {
+        return $this->transaction(function () use ($data) {
 
-            return SlaRule::create(
-                $data
-            );
+            return SlaRule::create($data);
         });
     }
 
@@ -26,11 +50,12 @@ class SlaRuleService
         array $data
     ): SlaRule {
 
-        return DB::transaction(function () use ($slaRule, $data) {
+        return $this->transaction(function () use (
+            $slaRule,
+            $data
+        ) {
 
-            $slaRule->update(
-                $data
-            );
+            $slaRule->update($data);
 
             return $slaRule->fresh();
         });
@@ -40,10 +65,6 @@ class SlaRuleService
         SlaRule $slaRule
     ): void {
 
-        $this->ensureDevelopmentEnvironment();
-
-        $slaRule->delete();
-
-        
+        $this->deleteModel($slaRule);
     }
 }

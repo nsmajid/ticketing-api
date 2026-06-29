@@ -3,19 +3,37 @@
 namespace App\TicketCategory\Services;
 
 use App\Models\TicketCategory;
-use App\Shared\Traits\EnvironmentProtection;
+use App\Shared\Services\BaseService;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
-class TicketCategoryService
+class TicketCategoryService extends BaseService
 {
-    use EnvironmentProtection;
+    public function index(Request $request): LengthAwarePaginator
+    {
+        return TicketCategory::query()
+            ->latest()
+            ->paginate(
+                $request->integer('per_page', 10)
+            );
+    }
+
+    public function show(
+        TicketCategory $category
+    ): TicketCategory {
+
+        return TicketCategory::query()
+            ->findOrFail($category->id);
+    }
 
     public function create(
         array $data
     ): TicketCategory {
 
-        return TicketCategory::create(
-            $data
-        );
+        return $this->transaction(function () use ($data) {
+
+            return TicketCategory::create($data);
+        });
     }
 
     public function update(
@@ -23,19 +41,21 @@ class TicketCategoryService
         array $data
     ): TicketCategory {
 
-        $category->update(
+        return $this->transaction(function () use (
+            $category,
             $data
-        );
+        ) {
 
-        return $category->fresh();
+            $category->update($data);
+
+            return $category->fresh();
+        });
     }
 
     public function delete(
         TicketCategory $category
     ): void {
-        
-        $this->ensureDevelopmentEnvironment();
 
-        $category->delete();
+        $this->deleteModel($category);
     }
 }
