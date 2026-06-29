@@ -19,7 +19,6 @@ abstract class BaseService
     ): mixed {
 
         return DB::transaction($callback);
-
     }
 
     /**
@@ -32,6 +31,10 @@ abstract class BaseService
         $this->ensureDevelopmentEnvironment();
 
         $model->delete();
+    }
 
+    protected function ensureWritable(): void
+    {
+        $this->ensureDevelopmentEnvironment();
     }
 }

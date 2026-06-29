@@ -3,8 +3,11 @@
 namespace App\TicketStatus\Services;
 
 use App\Models\TicketStatus;
+use App\Shared\Filters\BaseQueryFilter;
+use App\Shared\Filters\TicketStatusFilter;
 use App\Shared\Services\BaseService;
 use App\Shared\Traits\EnvironmentProtection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -13,23 +16,24 @@ class TicketStatusService extends BaseService
 {
     public function index(Request $request): LengthAwarePaginator
     {
-        return TicketStatus::query()
-            ->latest()
-            ->paginate(
-                $request->integer('per_page', 10)
-            );
+        return $this->filteredPaginate(
+            $this->baseQuery(),
+            $request,
+            new TicketStatusFilter($request)
+        );
     }
 
     public function show(
         TicketStatus $status
     ): TicketStatus {
-        return TicketStatus::query()
+        return $this->baseQuery()
             ->findOrFail($status->id);
     }
     /* Create */
     public function create(
         array $data
     ): TicketStatus {
+        $this->ensureWritable();
 
         return $this->transaction(function () use ($data) {
 
@@ -47,6 +51,8 @@ class TicketStatusService extends BaseService
         TicketStatus $ticketStatus,
         array $data
     ): TicketStatus {
+        $this->ensureWritable();
+
         return $this->transaction(function () use (
             $ticketStatus,
             $data
@@ -96,5 +102,23 @@ class TicketStatusService extends BaseService
             ->update([
                 $column => false,
             ]);
+    }
+
+    private function baseQuery(): Builder
+    {
+        return TicketStatus::query();
+    }
+
+    protected function filteredPaginate(
+        Builder $query,
+        Request $request,
+        BaseQueryFilter $filter
+    ): LengthAwarePaginator {
+
+        $filter->apply($query);
+
+        return $query->paginate(
+            $request->integer('per_page', 10)
+        );
     }
 }

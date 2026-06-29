@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\TicketStatus;
+use App\Shared\Enums\Ticket\TicketStatusCode;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
 
 class TicketStatusSeeder extends Seeder
 {
@@ -13,11 +15,12 @@ class TicketStatusSeeder extends Seeder
      */
     public function run(): void
     {
+
         $statuses = [
 
             [
-                'name' => 'Draft',
-                'code' => 'draft',
+                'name' => TicketStatusCode::Draft->label(),
+                'code' => TicketStatusCode::Draft->value,
                 'description' => 'Ticket masih dalam proses pembuatan dan belum dikirim.',
                 'color' => '#6B7280',
                 'icon' => 'file',
@@ -29,8 +32,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Submitted',
-                'code' => 'submitted',
+                'name' => TicketStatusCode::Submitted->label(),
+                'code' => TicketStatusCode::Submitted->value,
                 'description' => 'Ticket telah dikirim oleh pengguna.',
                 'color' => '#3B82F6',
                 'icon' => 'send',
@@ -42,8 +45,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Reviewed',
-                'code' => 'reviewed',
+                'name' => TicketStatusCode::Reviewed->label(),
+                'code' => TicketStatusCode::Reviewed->value,
                 'description' => 'Ticket telah direview oleh petugas.',
                 'color' => '#0EA5E9',
                 'icon' => 'search',
@@ -55,8 +58,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Assigned',
-                'code' => 'assigned',
+                'name' => TicketStatusCode::Assigned->label(),
+                'code' => TicketStatusCode::Assigned->value,
                 'description' => 'Ticket telah ditugaskan kepada teknisi.',
                 'color' => '#8B5CF6',
                 'icon' => 'user-check',
@@ -68,8 +71,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'In Progress',
-                'code' => 'in_progress',
+                'name' => TicketStatusCode::InProgress->label(),
+                'code' => TicketStatusCode::InProgress->value,
                 'description' => 'Pengerjaan ticket sedang berlangsung.',
                 'color' => '#F59E0B',
                 'icon' => 'loader',
@@ -81,8 +84,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Pending Client',
-                'code' => 'pending_client',
+                'name' => TicketStatusCode::PendingClient->label(),
+                'code' => TicketStatusCode::PendingClient->value,
                 'description' => 'Menunggu respon atau konfirmasi dari client.',
                 'color' => '#F97316',
                 'icon' => 'clock',
@@ -94,8 +97,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Pending Vendor',
-                'code' => 'pending_vendor',
+                'name' => TicketStatusCode::PendingVendor->label(),
+                'code' => TicketStatusCode::PendingVendor->value,
                 'description' => 'Menunggu tindak lanjut dari vendor.',
                 'color' => '#FB923C',
                 'icon' => 'building',
@@ -107,8 +110,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Resolved',
-                'code' => 'resolved',
+                'name' => TicketStatusCode::Resolved->label(),
+                'code' => TicketStatusCode::Resolved->value,
                 'description' => 'Permasalahan telah diselesaikan.',
                 'color' => '#22C55E',
                 'icon' => 'check-circle',
@@ -120,8 +123,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Closed',
-                'code' => 'closed',
+                'name' => TicketStatusCode::Closed->label(),
+                'code' => TicketStatusCode::Closed->value,
                 'description' => 'Ticket telah ditutup.',
                 'color' => '#16A34A',
                 'icon' => 'lock',
@@ -133,8 +136,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Rejected',
-                'code' => 'rejected',
+                'name' => TicketStatusCode::Rejected->label(),
+                'code' => TicketStatusCode::Rejected->value,
                 'description' => 'Ticket ditolak.',
                 'color' => '#DC2626',
                 'icon' => 'x-circle',
@@ -146,8 +149,8 @@ class TicketStatusSeeder extends Seeder
             ],
 
             [
-                'name' => 'Cancelled',
-                'code' => 'cancelled',
+                'name' => TicketStatusCode::Cancelled->label(),
+                'code' => TicketStatusCode::Cancelled->value,
                 'description' => 'Ticket dibatalkan oleh pengguna atau sistem.',
                 'color' => '#991B1B',
                 'icon' => 'ban',

@@ -15,6 +15,8 @@ class TicketPriorityResource extends JsonResource
             'id' => $this->id,
 
             'name' => $this->name,
+            
+            'code' => $this->code,
 
             'description' => $this->description,
 
