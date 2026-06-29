@@ -24,6 +24,12 @@ class UpdateTicketPriorityRequest extends FormRequest
                     ->ignore($this->route('ticket_priority'))
             ],
 
+            'code' => [
+                'required',
+                'alpha_dash',
+                'max:100',
+            ],
+
             'description' => [
                 'nullable',
                 'string',
@@ -55,6 +61,4 @@ class UpdateTicketPriorityRequest extends FormRequest
             ],
         ];
     }
-
-    
 }

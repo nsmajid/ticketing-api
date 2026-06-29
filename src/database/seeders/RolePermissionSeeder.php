@@ -81,6 +81,10 @@ class RolePermissionSeeder extends Seeder
 
             'report.view',
             'report.export',
+
+            'application.view',
+            'application.create',
+            'application.update',
         ];
 
         // Developer
@@ -106,6 +110,8 @@ class RolePermissionSeeder extends Seeder
             'attachment.upload',
 
             'sla.view',
+
+            'application.view',
         ];
 
         // QA
@@ -131,6 +137,8 @@ class RolePermissionSeeder extends Seeder
             'attachment.upload',
 
             'sla.view',
+
+            'application.view',
         ];
 
         // Support
@@ -156,6 +164,8 @@ class RolePermissionSeeder extends Seeder
             'attachment.upload',
 
             'sla.view',
+
+            'application.view',
         ];
 
         // Client Admin
@@ -199,7 +209,7 @@ class RolePermissionSeeder extends Seeder
             'sla.view',
         ];
 
-       
+
 
         $vendorManager->syncPermissions(
             $vendorManagerPermissions
