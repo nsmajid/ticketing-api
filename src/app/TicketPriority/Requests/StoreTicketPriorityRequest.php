@@ -11,46 +11,52 @@ class StoreTicketPriorityRequest extends FormRequest
         return true;
     }
 
-   public function rules(): array
-{
-    return [
+    public function rules(): array
+    {
+        return [
 
-        'name' => [
-            'required',
-            'string',
-            'max:255',
-            'unique:ticket_priorities,name',
-        ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:ticket_priorities,name',
+            ],
 
-        'description' => [
-            'nullable',
-            'string',
-        ],
+            'code' => [
+                'required',
+                'alpha_dash',
+                'max:100',
+            ],
 
-        'response_hours' => [
-            'required',
-            'integer',
-            'min:1',
-        ],
+            'description' => [
+                'nullable',
+                'string',
+            ],
 
-        'resolution_hours' => [
-            'required',
-            'integer',
-            'min:1',
-        ],
+            'response_hours' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
 
-        'color' => [
-            'nullable',
-            'string',
-        ],
+            'resolution_hours' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
 
-        'is_active' => [
-            'boolean',
-        ],
+            'color' => [
+                'nullable',
+                'string',
+            ],
 
-        'sort_order' => [
-            'integer',
-        ],
-    ];
-}
+            'is_active' => [
+                'boolean',
+            ],
+
+            'sort_order' => [
+                'integer',
+            ],
+        ];
+    }
 }

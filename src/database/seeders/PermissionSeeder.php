@@ -547,6 +547,43 @@ class PermissionSeeder extends Seeder
                 'sort_order' => 433,
             ],
 
+            /*  
+    |-----------------------------------------------------------------------
+    | Application
+    |----------------------------------------------------------------------
+    */
+            [
+                'name' => 'application.view',
+                'label' => 'View Application',
+                'group' => 'Application',
+                'description' => 'Can view applications',
+                'sort_order' => 601,
+            ],
+
+            [
+                'name' => 'application.create',
+                'label' => 'Create Application',
+                'group' => 'Application',
+                'description' => 'Can create applications',
+                'sort_order' => 602,
+            ],
+
+            [
+                'name' => 'application.update',
+                'label' => 'Update Application',
+                'group' => 'Application',
+                'description' => 'Can update applications',
+                'sort_order' => 603,
+            ],
+
+            [
+                'name' => 'application.delete',
+                'label' => 'Delete Application',
+                'group' => 'Application',
+                'description' => 'Can delete applications',
+                'sort_order' => 604,
+            ],
+
         ];
 
         foreach ($permissions as $permission) {
