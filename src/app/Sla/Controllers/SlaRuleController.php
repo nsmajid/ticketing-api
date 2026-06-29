@@ -4,68 +4,87 @@ namespace App\Sla\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\SlaRule;
+use App\Shared\Responses\ApiResponse;
 use App\Sla\Requests\StoreSlaRuleRequest;
 use App\Sla\Requests\UpdateSlaRuleRequest;
 use App\Sla\Resources\SlaRuleResource;
 use App\Sla\Services\SlaRuleService;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
 class SlaRuleController extends Controller implements HasMiddleware
 {
     public function __construct(
-        private SlaRuleService $slaRuleService
+        private SlaRuleService $service
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        return SlaRuleResource::collection(
-            SlaRule::all()
+        $rules = $this->service->index($request);
+
+        return ApiResponse::paginated(
+
+            SlaRuleResource::collection(
+                $rules
+            ),
+
+            'SLA rules retrieved successfully.'
+
         );
     }
 
     public function show(
         SlaRule $slaRule
-    ): SlaRuleResource {
-        return new SlaRuleResource(
-            $slaRule
+    ) {
+        return ApiResponse::success(
+            new SlaRuleResource(
+                $this->service->show(
+                    $slaRule
+                )
+            ),
+            'SLA rule retrieved successfully.'
         );
     }
 
     public function store(
         StoreSlaRuleRequest $request
-    ): SlaRuleResource {
-        return new SlaRuleResource(
-            $this->slaRuleService->create(
-                $request->all()
-            )
+    ) {
+        $rule = $this->service->create(
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+            new SlaRuleResource($rule),
+            'SLA rule created successfully.',
+            201
         );
     }
 
     public function update(
         UpdateSlaRuleRequest $request,
         SlaRule $slaRule
-    ): SlaRuleResource {
-        return new SlaRuleResource(
-            $this->slaRuleService->update(
-                $slaRule,
-                $request->all()
-            )
+    ) {
+        $rule = $this->service->update(
+            $slaRule,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+            new SlaRuleResource($rule),
+            'SLA rule updated successfully.'
         );
     }
 
     public function destroy(
         SlaRule $slaRule,
-        SlaRuleService $slaRuleService
     ) {
-        $slaRuleService->delete(
-            $slaRule
-        );
+        $this->service->delete($slaRule);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Sla rule deleted successfully'
-        ]);
+        return ApiResponse::success(
+            null,
+            'SLA rule deleted successfully.'
+        );
     }
 
 
@@ -80,9 +99,9 @@ class SlaRuleController extends Controller implements HasMiddleware
 
             new Middleware(
                 'permission:sla.manage',
-                only: ['store','update', 'destroy']
+                only: ['store', 'update', 'destroy']
             ),
-           
+
         ];
     }
 }

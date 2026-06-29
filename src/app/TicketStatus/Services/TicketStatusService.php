@@ -3,20 +3,40 @@
 namespace App\TicketStatus\Services;
 
 use App\Models\TicketStatus;
+use App\Shared\Services\BaseService;
 use App\Shared\Traits\EnvironmentProtection;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class TicketStatusService
+class TicketStatusService extends BaseService
 {
-    use EnvironmentProtection;
+    public function index(Request $request): LengthAwarePaginator
+    {
+        return TicketStatus::query()
+            ->latest()
+            ->paginate(
+                $request->integer('per_page', 10)
+            );
+    }
 
+    public function show(
+        TicketStatus $status
+    ): TicketStatus {
+        return TicketStatus::query()
+            ->findOrFail($status->id);
+    }
     /* Create */
     public function create(
         array $data
     ): TicketStatus {
-        return DB::transaction(function () use ($data) {
 
-            $this->resetBooleanFlag('is_initial');
+        return $this->transaction(function () use ($data) {
+
+            if (!empty($data['is_initial'])) {
+
+                $this->resetInitialStatus();
+            }
 
             return TicketStatus::create($data);
         });
@@ -27,12 +47,17 @@ class TicketStatusService
         TicketStatus $ticketStatus,
         array $data
     ): TicketStatus {
-        return DB::transaction(function () use ($ticketStatus, $data) {
+        return $this->transaction(function () use (
+            $ticketStatus,
+            $data
+        ) {
 
-            $this->resetBooleanFlag(
-                'is_initial',
-                $ticketStatus->id
-            );
+            if (!empty($data['is_initial'])) {
+
+                $this->resetInitialStatus(
+                    $ticketStatus->id
+                );
+            }
 
             $ticketStatus->update($data);
 
@@ -42,10 +67,9 @@ class TicketStatusService
 
     // DELETE
     public function delete(
-        TicketStatus $status
+        TicketStatus $ticketStatus
     ): void {
-        $this->ensureDevelopmentEnvironment();
-        $status->delete();
+        $this->deleteModel($ticketStatus);
     }
 
     private function resetInitialStatus(
