@@ -27,7 +27,6 @@ class ApplicationFeatureFilter extends BaseQueryFilter
         parent::apply($query);
 
         if ($this->request->filled('application_id')) {
-
             $query->where(
                 'application_id',
                 $this->request->integer('application_id')

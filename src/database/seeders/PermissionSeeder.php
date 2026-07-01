@@ -189,21 +189,21 @@ class PermissionSeeder extends Seeder
                 'sort_order' => 200,
             ],
 
-            [
-                'name' => 'ticket.approve',
-                'label' => 'Approve Ticket',
-                'group' => 'Review',
-                'description' => 'Can approve ticket',
-                'sort_order' => 201,
-            ],
+            // [
+            //     'name' => 'ticket.approve',
+            //     'label' => 'Approve Ticket',
+            //     'group' => 'Review',
+            //     'description' => 'Can approve ticket',
+            //     'sort_order' => 201,
+            // ],
 
-            [
-                'name' => 'ticket.reject',
-                'label' => 'Reject Ticket',
-                'group' => 'Review',
-                'description' => 'Can reject ticket',
-                'sort_order' => 202,
-            ],
+            // [
+            //     'name' => 'ticket.reject',
+            //     'label' => 'Reject Ticket',
+            //     'group' => 'Review',
+            //     'description' => 'Can reject ticket',
+            //     'sort_order' => 202,
+            // ],
 
             /*
     |--------------------------------------------------------------------------
