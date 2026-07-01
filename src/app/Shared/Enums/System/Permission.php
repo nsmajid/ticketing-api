@@ -83,4 +83,9 @@ enum Permission: string
     case ApplicationCreate = 'application.create';
     case ApplicationUpdate = 'application.update';
     case ApplicationDelete = 'application.delete';
+
+    case ApplicationFeatureView = 'application-feature.view';
+    case ApplicationFeatureCreate = 'application-feature.create';
+    case ApplicationFeatureUpdate = 'application-feature.update';
+    case ApplicationFeatureDelete = 'application-feature.delete';
 }
