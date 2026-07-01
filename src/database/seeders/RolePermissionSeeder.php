@@ -58,8 +58,8 @@ class RolePermissionSeeder extends Seeder
             'ticket.update',
 
             'ticket.review',
-            'ticket.reject',
-            'ticket.approve',
+            // 'ticket.reject',
+            // 'ticket.approve',
 
             'ticket.assign',
             'ticket.reassign',
@@ -133,7 +133,7 @@ class RolePermissionSeeder extends Seeder
             'ticket.view.own',
 
             'ticket.review',
-            'ticket.reject',
+            // 'ticket.reject',
 
             'progress.view',
             'progress.create',
@@ -162,7 +162,7 @@ class RolePermissionSeeder extends Seeder
             'ticket.view.own',
 
             'ticket.review',
-            'ticket.reject',
+            // 'ticket.reject',
 
             'ticket.update',
 

@@ -30,8 +30,4 @@ class Application extends Model
         return $this->hasMany(ApplicationFeature::class);
     }
 
-//     public function tickets(): HasMany
-//     {
-//         return $this->hasMany(Ticket::class);
-//     }
 }

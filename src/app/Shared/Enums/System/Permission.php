@@ -28,8 +28,8 @@ enum Permission: string
     case TicketUpdate = 'ticket.update';
     case TicketDelete = 'ticket.delete';
     case TicketReview = 'ticket.review';
-    case TicketReject = 'ticket.reject';
-    case TicketApprove = 'ticket.approve';
+    // case TicketReject = 'ticket.reject';
+    // case TicketApprove = 'ticket.approve';
     case TicketAssign = 'ticket.assign';
     case TicketReassign = 'ticket.reassign';
 

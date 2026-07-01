@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ApplicationFeature extends Model
 {
@@ -61,13 +62,11 @@ class ApplicationFeature extends Model
     /**
      * Get tickets using this feature.
      *
-     * Relationship akan digunakan setelah
-     * Ticket Module selesai dibuat.
      */
-    // public function tickets(): HasMany
-    // {
-    //     return $this->hasMany(
-    //         Ticket::class
-    //     );
-    // }
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(
+            Ticket::class
+        );
+    }
 }
