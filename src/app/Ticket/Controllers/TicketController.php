@@ -127,6 +127,27 @@ class TicketController extends Controller implements HasMiddleware
     }
 
     /**
+     * Submit ticket.
+     */
+    public function submit(
+        Ticket $ticket,
+    ) {
+        $ticket = $this->service->submit(
+            $ticket
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource(
+                $ticket
+            ),
+
+            'Ticket submitted successfully.'
+
+        );
+    }
+
+    /**
      * Controller Middleware.
      */
     public static function middleware(): array
@@ -145,6 +166,7 @@ class TicketController extends Controller implements HasMiddleware
                 'permission:ticket.create',
                 only: [
                     'store',
+                    'submit',
                 ]
             ),
 

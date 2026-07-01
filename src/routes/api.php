@@ -26,5 +26,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('sla-rules', SlaRuleController::class);
     Route::apiResource('applications', ApplicationController::class);
     Route::apiResource('application-features', ApplicationFeatureController::class);
-    Route::apiResource('tickets',TicketController::class);
+    Route::apiResource('tickets', TicketController::class);
+
+    Route::prefix('tickets')->group(function () {
+        Route::put(
+            '{ticket}/submit',
+            [TicketController::class, 'submit']
+        );
+    });
 });

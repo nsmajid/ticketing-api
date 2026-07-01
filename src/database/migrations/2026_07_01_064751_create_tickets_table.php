@@ -95,7 +95,7 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->timestamp('submitted_at');
+            $table->timestamp('submitted_at')->nullable();
 
             $table->timestamp('closed_at')
                 ->nullable();

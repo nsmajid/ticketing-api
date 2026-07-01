@@ -55,12 +55,10 @@ class TicketService extends BaseService
 
                 ->where(
                     'code',
-                    TicketStatusCode::Submitted->value
+                    TicketStatusCode::Draft->value
                 )
 
                 ->value('id');
-
-            $submittedAt = now();
 
             $ticket = Ticket::create([
 
@@ -72,15 +70,11 @@ class TicketService extends BaseService
 
                 'ticket_status_id' => $statusId,
 
-                'submitted_at' => $submittedAt,
+                'submitted_at' => null,
 
-                'response_due_at' => $submittedAt
-                    ->copy()
-                    ->addHours($slaRule->response_hours),
+                'response_due_at' => null,
 
-                'resolution_due_at' => $submittedAt
-                    ->copy()
-                    ->addHours($slaRule->resolution_hours),
+                'resolution_due_at' => null,
 
             ]);
 
@@ -96,20 +90,60 @@ class TicketService extends BaseService
         array $data
     ): Ticket {
 
-        $this->ensureSubmitted($ticket);
+        $this->ensureEditable($ticket);
 
         return $this->transaction(function () use (
             $ticket,
             $data
         ) {
 
-            $slaRule = $this->resolveSlaRule($data);
-
-            $submittedAt = $ticket->submitted_at;
-
             $ticket->update([
 
                 ...$data,
+
+                'response_due_at' => null,
+
+                'resolution_due_at' => null,
+
+            ]);
+
+            return $this->show($ticket);
+        });
+    }
+
+
+    /**
+     * Submit ticket.
+     */
+    public function submit(
+        Ticket $ticket
+    ): Ticket {
+
+        $this->ensureDraft($ticket);
+
+        return $this->transaction(function () use ($ticket) {
+
+            $statusId = TicketStatus::query()
+
+                ->where(
+                    'code',
+                    TicketStatusCode::Submitted->value
+                )
+
+                ->value('id');
+
+            $slaRule = $this->resolveSlaRule([
+                'ticket_category_id' => $ticket->ticket_category_id,
+                'ticket_priority_id' => $ticket->ticket_priority_id,
+            ]);
+
+            $submittedAt = now();
+
+            $ticket->update([
+
+                'ticket_status_id' => $statusId,
+
+                'submitted_at' => $submittedAt,
 
                 'response_due_at' => $submittedAt
                     ->copy()
@@ -132,7 +166,7 @@ class TicketService extends BaseService
         Ticket $ticket
     ): void {
 
-        $this->ensureSubmitted($ticket);
+        $this->ensureDeletable($ticket);
 
         $ticket->delete();
     }
@@ -181,6 +215,8 @@ class TicketService extends BaseService
             ->firstOrFail();
     }
 
+    
+
     /**
      * Ensure ticket still submitted.
      */
@@ -195,6 +231,24 @@ class TicketService extends BaseService
             abort(
                 422,
                 'Only submitted ticket can be modified.'
+            );
+        }
+    }
+
+    private function ensureDraft(
+        Ticket $ticket
+    ): void {
+
+        if (
+            $ticket->status->code !== TicketStatusCode::Draft->value
+        ) {
+
+            abort(
+
+                422,
+
+                'Only draft ticket can be submitted.'
+
             );
         }
     }
@@ -226,6 +280,42 @@ class TicketService extends BaseService
             $prefix,
             $sequence
         );
+    }
+
+    private function ensureEditable(
+        Ticket $ticket
+    ): void {
+
+        if (! in_array(
+
+            $ticket->status->code,
+
+            [
+                TicketStatusCode::Draft->value,
+
+                TicketStatusCode::Rejected->value,
+            ]
+        )) {
+            abort(
+                422,
+                'Ticket cannot be modified.'
+            );
+        }
+    }
+
+    private function ensureDeletable(
+        Ticket $ticket
+    ): void {
+
+        if (
+            $ticket->status->code !== TicketStatusCode::Draft->value
+        ) {
+
+            abort(
+                422,
+                'Only draft ticket can be deleted.'
+            );
+        }
     }
 
     protected function filteredPaginate(
