@@ -1,6 +1,7 @@
 <?php
 
 use App\Application\Controllers\ApplicationController;
+use App\ApplicationFeature\Controllers\ApplicationFeatureController;
 use App\Auth\Controllers\AuthController;
 use App\Sla\Controllers\SlaRuleController;
 use App\TicketCategory\Controllers\TicketCategoryController;
@@ -23,4 +24,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('ticket-statuses', TicketStatusController::class);
     Route::apiResource('sla-rules', SlaRuleController::class);
     Route::apiResource('applications', ApplicationController::class);
+    Route::apiResource('application-features', ApplicationFeatureController::class);
 });

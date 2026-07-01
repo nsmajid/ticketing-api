@@ -85,6 +85,10 @@ class RolePermissionSeeder extends Seeder
             'application.view',
             'application.create',
             'application.update',
+
+            'application-feature.view',
+            'application-feature.create',
+            'application-feature.update',
         ];
 
         // Developer
@@ -112,6 +116,8 @@ class RolePermissionSeeder extends Seeder
             'sla.view',
 
             'application.view',
+
+            'application-feature.view',
         ];
 
         // QA
@@ -139,6 +145,8 @@ class RolePermissionSeeder extends Seeder
             'sla.view',
 
             'application.view',
+
+            'application-feature.view',
         ];
 
         // Support
@@ -166,6 +174,8 @@ class RolePermissionSeeder extends Seeder
             'sla.view',
 
             'application.view',
+
+            'application-feature.view',
         ];
 
         // Client Admin
@@ -189,6 +199,8 @@ class RolePermissionSeeder extends Seeder
             'attachment.upload',
 
             'sla.view',
+
+            'application-feature.view',
         ];
 
         // Client User
@@ -207,6 +219,8 @@ class RolePermissionSeeder extends Seeder
             'attachment.upload',
 
             'sla.view',
+
+            'application-feature.view',
         ];
 
 

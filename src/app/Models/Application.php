@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Application extends Model
 {
@@ -24,10 +25,10 @@ class Application extends Model
     |--------------------------------------------------------------------------
     */
 
-//     public function features(): HasMany
-//     {
-//         // return $this->hasMany(ApplicationFeature::class);
-//     }
+    public function features(): HasMany
+    {
+        return $this->hasMany(ApplicationFeature::class);
+    }
 
 //     public function tickets(): HasMany
 //     {

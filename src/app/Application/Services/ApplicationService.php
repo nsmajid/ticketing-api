@@ -70,7 +70,7 @@ class ApplicationService extends BaseService
     public function delete(Application $application): void
     {
 
-        $this->deleteModel($application);
+      $application->delete();
     }
 
     /**
