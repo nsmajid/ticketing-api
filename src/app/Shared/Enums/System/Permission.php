@@ -94,4 +94,7 @@ enum Permission: string
     case TicketWaitingForCreate = 'ticket-waiting-for.create';
     case TicketWaitingForUpdate = 'ticket-waiting-for.update';
     case TicketWaitingForDelete = 'ticket-waiting-for.delete';
+
+    case TicketProgress = 'ticket.progress';
+    case TicketResolve = 'ticket.resolve';
 }

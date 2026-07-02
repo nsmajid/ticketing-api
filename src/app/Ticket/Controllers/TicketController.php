@@ -12,6 +12,10 @@ use App\Ticket\Requests\StoreTicketRequest;
 use App\Ticket\Requests\UpdateTicketRequest;
 use App\Ticket\Resources\TicketResource;
 use App\Ticket\Services\TicketService;
+use App\TicketProgress\Requests\PendingTicketRequest;
+use App\TicketProgress\Requests\ResolveTicketRequest;
+use App\TicketProgress\Requests\ResumeProgressRequest;
+use App\TicketProgress\Requests\StartProgressRequest;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -196,6 +200,95 @@ class TicketController extends Controller implements HasMiddleware
 
         );
     }
+
+    /**
+     * Start ticket progress.
+     */
+    public function startProgress(
+        StartProgressRequest $request,
+        Ticket $ticket
+    ) {
+
+        $ticket = $this->service->startProgress(
+            $ticket,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource($ticket),
+
+            'Ticket started successfully.'
+
+        );
+    }
+
+    /**
+     * Pending ticket.
+     */
+    public function pending(
+        PendingTicketRequest $request,
+        Ticket $ticket
+    ) {
+
+        $ticket = $this->service->pending(
+            $ticket,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource($ticket),
+
+            'Ticket pending successfully.'
+
+        );
+    }
+
+    /**
+     * Resume ticket.
+     */
+    public function resume(
+        ResumeProgressRequest $request,
+        Ticket $ticket
+    ) {
+
+        $ticket = $this->service->resume(
+            $ticket,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource($ticket),
+
+            'Ticket resumed successfully.'
+
+        );
+    }
+
+    /**
+     * Resolve ticket.
+     */
+    public function resolve(
+        ResolveTicketRequest $request,
+        Ticket $ticket
+    ) {
+
+        $ticket = $this->service->resolve(
+            $ticket,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource($ticket),
+
+            'Ticket resolved successfully.'
+
+        );
+    }
+
     /**
      * Controller Middleware.
      */
@@ -244,6 +337,22 @@ class TicketController extends Controller implements HasMiddleware
                 'permission:ticket.assign|ticket.reassign',
                 only: [
                     'assign',
+                ]
+            ),
+
+            new Middleware(
+                'permission:ticket.progress',
+                only: [
+                    'startProgress',
+                    'pending',
+                    'resume',
+                ]
+            ),
+
+            new Middleware(
+                'permission:ticket.resolve',
+                only: [
+                    'resolve',
                 ]
             ),
         ];
