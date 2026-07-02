@@ -27,23 +27,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('sla-rules', SlaRuleController::class);
     Route::apiResource('applications', ApplicationController::class);
     Route::apiResource('application-features', ApplicationFeatureController::class);
-    Route::apiResource('ticket-waiting-fors',TicketWaitingForController::class);
+    Route::apiResource('ticket-waiting-fors', TicketWaitingForController::class);
     Route::apiResource('tickets', TicketController::class);
 
     Route::prefix('tickets')->group(function () {
-        Route::put(
-            '{ticket}/submit',
-            [TicketController::class, 'submit']
-        );
-
-        Route::put(
-            '{ticket}/review',
-            [TicketController::class, 'review']
-        );
-
-        Route::post(
-            '{ticket}/assignments',
-            [TicketController::class, 'assign']
-        );
+        Route::put('{ticket}/submit', [TicketController::class, 'submit']);
+        Route::put('{ticket}/review',[TicketController::class, 'review']);
+        Route::post('{ticket}/assignments',[TicketController::class, 'assign']);
+        Route::put('{ticket}/start-progress',[TicketController::class, 'startProgress']);
+        Route::put('{ticket}/pending',[TicketController::class, 'pending']);
+        Route::put('{ticket}/resume',[TicketController::class, 'resume']);
+        Route::put('{ticket}/resolve',[TicketController::class, 'resolve']);
     });
 });

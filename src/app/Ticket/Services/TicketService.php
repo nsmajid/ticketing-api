@@ -7,6 +7,7 @@ use App\Models\SlaRule;
 use App\Models\Ticket;
 use App\Models\TicketAssignableRole;
 use App\Models\TicketAssignment;
+use App\Models\TicketProgress;
 use App\Models\TicketStatus;
 use App\Models\User;
 use App\Shared\Enums\System\Permission;
@@ -335,6 +336,157 @@ class TicketService extends BaseService
             return $this->show($ticket);
         });
     }
+
+    /**
+     * Create ticket progress.
+     */
+    private function createProgress(
+        Ticket $ticket,
+        array $data
+    ): void {
+
+        TicketProgress::create([
+
+            'ticket_id' => $ticket->id,
+
+            'ticket_status_id' => $ticket->ticket_status_id,
+
+            'ticket_waiting_for_id' => $data['ticket_waiting_for_id'] ?? null,
+
+            'user_id' => auth()->id(),
+
+            'progress_notes' => $data['progress_notes'] ?? null,
+
+            'resolution_notes' => $data['resolution_notes'] ?? null,
+
+        ]);
+    }
+
+    public function startProgress(
+        Ticket $ticket,
+        array $data
+    ): Ticket {
+
+        $this->ensureStartable($ticket);
+
+        return $this->transaction(function () use (
+            $ticket,
+            $data
+        ) {
+
+            $ticket->update([
+
+                'ticket_status_id' => $this->resolveStatusId(
+                    TicketStatusCode::InProgress
+                ),
+
+            ]);
+
+            // Refresh agar ticket_status_id terbaru terbaca
+            $ticket->refresh();
+
+            $this->createProgress(
+                $ticket,
+                $data
+            );
+
+            return $this->show($ticket);
+        });
+    }
+
+    public function pending(
+        Ticket $ticket,
+        array $data
+    ): Ticket {
+
+        $this->ensurePendingable($ticket);
+
+        return $this->transaction(function () use (
+            $ticket,
+            $data
+        ) {
+
+            $ticket->update([
+
+                'ticket_status_id' => $this->resolveStatusId(
+                    TicketStatusCode::Pending
+                ),
+
+            ]);
+
+            $ticket->refresh();
+
+            $this->createProgress(
+                $ticket,
+                $data
+            );
+
+            return $this->show($ticket);
+        });
+    }
+
+    public function resume(
+        Ticket $ticket,
+        array $data
+    ): Ticket {
+
+        $this->ensureResumable($ticket);
+
+        return $this->transaction(function () use (
+            $ticket,
+            $data
+        ) {
+
+            $ticket->update([
+
+                'ticket_status_id' => $this->resolveStatusId(
+                    TicketStatusCode::InProgress
+                ),
+
+            ]);
+
+            $ticket->refresh();
+
+            $this->createProgress(
+                $ticket,
+                $data
+            );
+
+            return $this->show($ticket);
+        });
+    }
+
+    public function resolve(
+        Ticket $ticket,
+        array $data
+    ): Ticket {
+
+        $this->ensureResolvable($ticket);
+
+        return $this->transaction(function () use (
+            $ticket,
+            $data
+        ) {
+
+            $ticket->update([
+
+                'ticket_status_id' => $this->resolveStatusId(
+                    TicketStatusCode::Resolved
+                ),
+
+            ]);
+
+            $ticket->refresh();
+
+            $this->createProgress(
+                $ticket,
+                $data
+            );
+
+            return $this->show($ticket);
+        });
+    }
+
     /**
      * Delete ticket.
      */
@@ -556,9 +708,8 @@ class TicketService extends BaseService
 
                 TicketStatusCode::InProgress->value,
 
-                TicketStatusCode::PendingClient->value,
+                TicketStatusCode::Pending->value,
 
-                TicketStatusCode::PendingVendor->value,
 
             ]
 
@@ -589,6 +740,82 @@ class TicketService extends BaseService
             abort(
                 422,
                 'Selected user cannot receive ticket assignment.'
+            );
+        }
+    }
+
+    /**
+     * Ensure ticket can be started.
+     */
+    private function ensureStartable(
+        Ticket $ticket
+    ): void {
+
+        if (
+            $ticket->status->code !==
+            TicketStatusCode::Assigned->value
+        ) {
+
+            abort(
+                422,
+                'Only assigned ticket can be started.'
+            );
+        }
+    }
+
+    /**
+     * Ensure ticket can be pending.
+     */
+    private function ensurePendingable(
+        Ticket $ticket
+    ): void {
+
+        if (
+            $ticket->status->code !==
+            TicketStatusCode::InProgress->value
+        ) {
+
+            abort(
+                422,
+                'Only in progress ticket can be pending.'
+            );
+        }
+    }
+
+    /**
+     * Ensure ticket can be resumed.
+     */
+    private function ensureResumable(
+        Ticket $ticket
+    ): void {
+
+        if (
+            $ticket->status->code !==
+            TicketStatusCode::Pending->value
+        ) {
+
+            abort(
+                422,
+                'Only pending ticket can be resumed.'
+            );
+        }
+    }
+
+    /**
+     * Ensure ticket can be resolved.
+     */
+    private function ensureResolvable(
+        Ticket $ticket
+    ): void {
+
+        if (
+            $ticket->status->code !==
+            TicketStatusCode::InProgress->value
+        ) {
+
+            abort(
+                422,
+                'Only in progress ticket can be resolved.'
             );
         }
     }

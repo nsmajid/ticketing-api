@@ -653,6 +653,22 @@ class PermissionSeeder extends Seeder
                 'sort_order' => 363,
             ],
 
+            [
+                'name' => 'ticket.progress',
+                'label' => 'Ticket Progress',
+                'group' => 'Ticket',
+                'description' => 'Can start progress, pending and resume ticket.',
+                'sort_order' => 364,
+            ],
+           
+            [
+                'name' => 'ticket.resolve',
+                'label' => 'Ticket Resolve',
+                'group' => 'Ticket',
+                'description' => 'Can resolve ticket.',
+                'sort_order' => 365,
+            ],
+
         ];
 
         foreach ($permissions as $permission) {

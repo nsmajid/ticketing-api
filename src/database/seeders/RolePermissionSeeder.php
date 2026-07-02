@@ -90,7 +90,10 @@ class RolePermissionSeeder extends Seeder
             'application-feature.create',
             'application-feature.update',
 
-            'ticket-waiting-for.view'
+            'ticket-waiting-for.view',
+
+            'ticket.progress',
+            'ticket.resolve',
         ];
 
         // Developer
@@ -121,7 +124,11 @@ class RolePermissionSeeder extends Seeder
 
             'application-feature.view',
 
-            'ticket-waiting-for.view'
+            'ticket-waiting-for.view',
+
+            'ticket.progress',
+            'ticket.resolve',
+
         ];
 
         // QA
@@ -152,7 +159,10 @@ class RolePermissionSeeder extends Seeder
 
             'application-feature.view',
 
-            'ticket-waiting-for.view'
+            'ticket-waiting-for.view',
+
+            'ticket.progress',
+            'ticket.resolve',
         ];
 
         // Support
