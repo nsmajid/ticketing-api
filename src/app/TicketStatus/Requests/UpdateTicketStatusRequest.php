@@ -19,14 +19,15 @@ class UpdateTicketStatusRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('ticket_statuses', 'code')
-                    ->ignore($this->route('ticket_status'))
+               
             ],
 
             'code' => [
                 'required',
                 'alpha_dash',
                 'max:100',
+                 Rule::unique('ticket_statuses', 'code')
+                    ->ignore($this->route('ticket_status'))
             ],
 
             'description' => [

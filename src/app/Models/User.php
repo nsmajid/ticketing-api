@@ -78,4 +78,14 @@ class User extends Authenticatable
             'assigned_by'
         );
     }
+
+    /**
+     * Ticket progresses.
+     */
+    public function ticketProgresses(): HasMany
+    {
+        return $this->hasMany(
+            TicketProgress::class
+        );
+    }
 }

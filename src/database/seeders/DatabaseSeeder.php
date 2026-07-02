@@ -30,7 +30,8 @@ class DatabaseSeeder extends Seeder
             SlaRuleSeeder::class,
             ApplicationSeeder::class,
             ApplicationFeatureSeeder::class,
-            TicketAssignableRoleSeeder::class
+            TicketAssignableRoleSeeder::class,
+            TicketWaitingForSeeder::class
         ]);
     }
 }

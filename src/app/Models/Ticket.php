@@ -243,4 +243,14 @@ class Ticket extends Model
             TicketAssignment::class
         )->where('is_active', true);
     }
+
+    /**
+     * Ticket progresses.
+     */
+    public function progresses(): HasMany
+    {
+        return $this->hasMany(
+            TicketProgress::class
+        );
+    }
 }

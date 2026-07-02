@@ -621,6 +621,38 @@ class PermissionSeeder extends Seeder
                 'sort_order' => 704,
             ],
 
+            [
+                'name' => 'ticket-waiting-for.view',
+                'label' => 'View Ticket Waiting For',
+                'group' => 'Ticket Waiting For',
+                'description' => 'Can view ticket waiting for.',
+                'sort_order' => 360,
+            ],
+
+            [
+                'name' => 'ticket-waiting-for.create',
+                'label' => 'Create Ticket Waiting For',
+                'group' => 'Ticket Waiting For',
+                'description' => 'Can create ticket waiting for.',
+                'sort_order' => 361,
+            ],
+
+            [
+                'name' => 'ticket-waiting-for.update',
+                'label' => 'Update Ticket Waiting For',
+                'group' => 'Ticket Waiting For',
+                'description' => 'Can update ticket waiting for.',
+                'sort_order' => 362,
+            ],
+
+            [
+                'name' => 'ticket-waiting-for.delete',
+                'label' => 'Delete Ticket Waiting For',
+                'group' => 'Ticket Waiting For',
+                'description' => 'Can delete ticket waiting for.',
+                'sort_order' => 363,
+            ],
+
         ];
 
         foreach ($permissions as $permission) {
