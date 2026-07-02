@@ -105,7 +105,11 @@ class Ticket extends Model
 
         'resolved_at',
 
+        'closed_by',
+
         'closed_at',
+
+        'close_notes',
 
     ];
 
@@ -251,6 +255,16 @@ class Ticket extends Model
     {
         return $this->hasMany(
             TicketProgress::class
+        );
+    }
+    /**
+     * Ticket closer.
+     */
+    public function closer(): BelongsTo
+    {
+        return $this->belongsTo(
+            User::class,
+            'closed_by'
         );
     }
 }

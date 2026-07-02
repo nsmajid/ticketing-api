@@ -5,6 +5,7 @@ namespace App\Ticket\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Shared\Responses\ApiResponse;
+use App\Ticket\Requests\AcceptTicketRequest;
 use App\Ticket\Requests\AssignTicketRequest;
 use App\Ticket\Requests\ReassignTicketRequest;
 use App\Ticket\Requests\ReviewTicketRequest;
@@ -290,6 +291,28 @@ class TicketController extends Controller implements HasMiddleware
     }
 
     /**
+     * Accept ticket.
+     */
+    public function accept(
+        AcceptTicketRequest $request,
+        Ticket $ticket
+    ) {
+
+        $ticket = $this->service->accept(
+            $ticket,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource($ticket),
+
+            'Ticket acceptance processed successfully.'
+
+        );
+    }
+
+    /**
      * Controller Middleware.
      */
     public static function middleware(): array
@@ -354,6 +377,16 @@ class TicketController extends Controller implements HasMiddleware
                 only: [
                     'resolve',
                 ]
+            ),
+
+            new Middleware(
+
+                'permission:ticket.close',
+                only: [
+
+                    'accept',
+                ]
+
             ),
         ];
     }

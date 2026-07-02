@@ -97,8 +97,7 @@ return new class extends Migration
 
             $table->timestamp('submitted_at')->nullable();
 
-            $table->timestamp('closed_at')
-                ->nullable();
+    
 
             $table->timestamps();
 
@@ -122,7 +121,6 @@ return new class extends Migration
 
             $table->index('submitted_at');
 
-            $table->index('closed_at');
         });
     }
 

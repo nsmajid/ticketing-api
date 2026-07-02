@@ -26,6 +26,19 @@ return new class extends Migration
             $table->text('review_notes')
                 ->nullable()
                 ->after('description');
+            $table->foreignId('closed_by')
+                ->nullable()
+                ->after('review_notes')
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->timestamp('closed_at')
+                ->nullable()
+                ->after('closed_by');
+
+            $table->text('close_notes')
+                ->nullable()
+                ->after('closed_at');
         });
     }
 
@@ -37,12 +50,19 @@ return new class extends Migration
         Schema::table('tickets', function (Blueprint $table) {
 
             $table->dropConstrainedForeignId('reviewed_by');
+            $table->dropForeign(['closed_by']);
 
             $table->dropColumn([
 
                 'reviewed_at',
 
                 'review_notes',
+                
+                'closed_by',
+
+                'closed_at',
+                
+                'close_notes',
 
             ]);
         });
