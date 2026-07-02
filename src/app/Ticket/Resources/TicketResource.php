@@ -34,7 +34,7 @@ class TicketResource extends JsonResource
 
             'requester_name' => $this->whenLoaded(
                 'requester',
-                fn () => $this->requester->name
+                fn() => $this->requester->name
             ),
 
             /*
@@ -45,12 +45,12 @@ class TicketResource extends JsonResource
 
             'application_id' => $this->whenLoaded(
                 'applicationFeature.application',
-                fn () => $this->applicationFeature->application->id
+                fn() => $this->applicationFeature->application->id
             ),
 
             'application_name' => $this->whenLoaded(
                 'applicationFeature.application',
-                fn () => $this->applicationFeature->application->name
+                fn() => $this->applicationFeature->application->name
             ),
 
             /*
@@ -63,7 +63,7 @@ class TicketResource extends JsonResource
 
             'application_feature_name' => $this->whenLoaded(
                 'applicationFeature',
-                fn () => $this->applicationFeature->name
+                fn() => $this->applicationFeature->name
             ),
 
             /*
@@ -76,7 +76,7 @@ class TicketResource extends JsonResource
 
             'ticket_category_name' => $this->whenLoaded(
                 'category',
-                fn () => $this->category->name
+                fn() => $this->category->name
             ),
 
             /*
@@ -89,12 +89,12 @@ class TicketResource extends JsonResource
 
             'ticket_priority_name' => $this->whenLoaded(
                 'priority',
-                fn () => $this->priority->name
+                fn() => $this->priority->name
             ),
 
             'ticket_priority_color' => $this->whenLoaded(
                 'priority',
-                fn () => $this->priority->color
+                fn() => $this->priority->color
             ),
 
             /*
@@ -107,18 +107,37 @@ class TicketResource extends JsonResource
 
             'ticket_status_name' => $this->whenLoaded(
                 'status',
-                fn () => $this->status->name
+                fn() => $this->status->name
             ),
 
             'ticket_status_code' => $this->whenLoaded(
                 'status',
-                fn () => $this->status->code
+                fn() => $this->status->code
             ),
 
             'ticket_status_color' => $this->whenLoaded(
                 'status',
-                fn () => $this->status->color
+                fn() => $this->status->color
             ),
+
+
+            /*
+|--------------------------------------------------------------------------
+| Review
+|--------------------------------------------------------------------------
+*/
+
+            'reviewed_by' => $this->reviewed_by,
+
+            'reviewer_name' => $this->whenLoaded(
+                'reviewer',
+                fn() => $this->reviewer->name
+            ),
+
+            'reviewed_at' => $this->reviewed_at?->toDateTimeString(),
+
+            'review_notes' => $this->review_notes,
+
 
             /*
             |--------------------------------------------------------------------------

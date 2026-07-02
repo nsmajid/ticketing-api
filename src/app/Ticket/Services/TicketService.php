@@ -92,8 +92,26 @@ class TicketService extends BaseService
 
         $this->ensureEditable($ticket);
 
+        $statusId = $ticket->ticket_status_id;
+
+        if (
+            $ticket->status->code ===
+            TicketStatusCode::Rejected->value
+        ) {
+
+            $statusId = TicketStatus::query()
+
+                ->where(
+                    'code',
+                    TicketStatusCode::Draft->value
+                )
+
+                ->value('id');
+        }
+
         return $this->transaction(function () use (
             $ticket,
+            $statusId,
             $data
         ) {
 
@@ -101,8 +119,11 @@ class TicketService extends BaseService
 
                 ...$data,
 
+                'ticket_status_id' => $statusId,
+                'reviewed_by' => null,
+                'reviewed_at' => null,
+                'review_notes' => null,
                 'response_due_at' => null,
-
                 'resolution_due_at' => null,
 
             ]);
@@ -123,14 +144,9 @@ class TicketService extends BaseService
 
         return $this->transaction(function () use ($ticket) {
 
-            $statusId = TicketStatus::query()
-
-                ->where(
-                    'code',
-                    TicketStatusCode::Submitted->value
-                )
-
-                ->value('id');
+            $statusId = $this->resolveStatusId(
+                TicketStatusCode::Submitted
+            );
 
             $slaRule = $this->resolveSlaRule([
                 'ticket_category_id' => $ticket->ticket_category_id,
@@ -142,18 +158,56 @@ class TicketService extends BaseService
             $ticket->update([
 
                 'ticket_status_id' => $statusId,
-
                 'submitted_at' => $submittedAt,
-
                 'response_due_at' => $submittedAt
                     ->copy()
                     ->addHours($slaRule->response_hours),
-
                 'resolution_due_at' => $submittedAt
                     ->copy()
                     ->addHours($slaRule->resolution_hours),
 
             ]);
+
+            return $this->show($ticket);
+        });
+    }
+
+    /**
+     * Review ticket.
+     */
+    public function review(
+        Ticket $ticket,
+        array $data
+    ): Ticket {
+        $this->ensureReviewable($ticket);
+
+        return $this->transaction(function () use (
+            $ticket,
+            $data
+        ) {
+
+            $statusId = $this->resolveStatusId(
+                $data['result']
+            );
+
+            $ticket->update([
+
+                'ticket_status_id' => $statusId,
+
+                'reviewed_by' => auth()->id(),
+
+                'reviewed_at' => now(),
+
+                'review_notes' => $data['review_notes'],
+
+            ]);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Ticket Activity
+        |--------------------------------------------------------------------------
+        | Step 18
+        */
 
             return $this->show($ticket);
         });
@@ -181,6 +235,8 @@ class TicketService extends BaseService
             ->with([
 
                 'requester',
+
+                'reviewer',
 
                 'applicationFeature.application',
 
@@ -215,7 +271,7 @@ class TicketService extends BaseService
             ->firstOrFail();
     }
 
-    
+
 
     /**
      * Ensure ticket still submitted.
@@ -316,6 +372,35 @@ class TicketService extends BaseService
                 'Only draft ticket can be deleted.'
             );
         }
+    }
+
+    /**
+     * Ensure ticket can be reviewed.
+     */
+    private function ensureReviewable(
+        Ticket $ticket
+    ): void {
+        if (
+            $ticket->status->code !==
+            TicketStatusCode::Submitted->value
+        ) {
+            abort(
+                422,
+                'Only submitted ticket can be reviewed.'
+            );
+        }
+    }
+
+    private function resolveStatusId(
+        TicketStatusCode|string $status
+    ): int {
+        $code = $status instanceof TicketStatusCode
+            ? $status->value
+            : $status;
+
+        return TicketStatus::query()
+            ->where('code', $code)
+            ->value('id');
     }
 
     protected function filteredPaginate(
