@@ -5,6 +5,7 @@ namespace App\Ticket\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Shared\Responses\ApiResponse;
+use App\Ticket\Requests\ReviewTicketRequest;
 use App\Ticket\Requests\StoreTicketRequest;
 use App\Ticket\Requests\UpdateTicketRequest;
 use App\Ticket\Resources\TicketResource;
@@ -148,6 +149,30 @@ class TicketController extends Controller implements HasMiddleware
     }
 
     /**
+     * Review ticket.
+     */
+    public function review(
+        ReviewTicketRequest $request,
+        Ticket $ticket,
+    ) {
+
+        $ticket = $this->service->review(
+            $ticket,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource(
+                $ticket
+            ),
+
+            'Ticket reviewed successfully.'
+
+        );
+    }
+
+    /**
      * Controller Middleware.
      */
     public static function middleware(): array
@@ -181,6 +206,13 @@ class TicketController extends Controller implements HasMiddleware
                 'permission:ticket.delete',
                 only: [
                     'destroy',
+                ]
+            ),
+
+            new Middleware(
+                'permission:ticket.review',
+                only: [
+                    'review',
                 ]
             ),
 

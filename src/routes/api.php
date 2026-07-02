@@ -33,5 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
             '{ticket}/submit',
             [TicketController::class, 'submit']
         );
+
+        Route::put(
+            '{ticket}/review',
+            [TicketController::class, 'review']
+        );
     });
 });

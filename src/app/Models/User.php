@@ -35,11 +35,25 @@ class User extends Authenticatable
         ];
     }
 
-    public function tickets(): HasMany
-{
-    return $this->hasMany(
-        Ticket::class,
-        'requester_id'
-    );
-}
+    /**
+     * Tickets created by this user.
+     */
+    public function requestedTickets(): HasMany
+    {
+        return $this->hasMany(
+            Ticket::class,
+            'requester_id'
+        );
+    }
+
+    /**
+     * Tickets reviewed by this user.
+     */
+    public function reviewedTickets(): HasMany
+    {
+        return $this->hasMany(
+            Ticket::class,
+            'reviewed_by'
+        );
+    }
 }
