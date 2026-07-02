@@ -173,8 +173,6 @@ class TicketResource extends JsonResource
 
             'resolved_at' => $this->resolved_at?->toDateTimeString(),
 
-            'closed_at' => $this->closed_at?->toDateTimeString(),
-
             /*
             |--------------------------------------------------------------------------
             | Audit
@@ -221,6 +219,19 @@ class TicketResource extends JsonResource
                 'activeAssignment',
                 fn() => $this->activeAssignment?->assignment_notes
             ),
+
+            'closer' => $this->when(
+                $this->closed_by,
+                fn() => [
+                    'id' => $this->closer?->id,
+                    'name' => $this->closer?->name,
+                ]
+
+            ),
+
+            'closed_at' => $this->closed_at?->toDateTimeString(),
+
+            'close_notes' => $this->close_notes,
 
         ];
     }

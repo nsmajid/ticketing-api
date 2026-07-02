@@ -38,5 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('{ticket}/pending',[TicketController::class, 'pending']);
         Route::put('{ticket}/resume',[TicketController::class, 'resume']);
         Route::put('{ticket}/resolve',[TicketController::class, 'resolve']);
+        Route::put('{ticket}/accept',[TicketController::class, 'accept']);
     });
 });

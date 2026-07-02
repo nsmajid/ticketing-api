@@ -81,6 +81,12 @@ class TicketService extends BaseService
 
                 'resolution_due_at' => null,
 
+                'closed_by' => null,
+
+                'closed_at' => null,
+
+                'close_notes' => null,
+
             ]);
 
             return $this->show($ticket);
@@ -130,6 +136,9 @@ class TicketService extends BaseService
                 'review_notes' => null,
                 'response_due_at' => null,
                 'resolution_due_at' => null,
+                'closed_by' => null,
+                'closed_at' => null,
+                'close_notes' => null,
 
             ]);
 
@@ -488,6 +497,61 @@ class TicketService extends BaseService
     }
 
     /**
+     * Accept ticket.
+     */
+    public function accept(
+        Ticket $ticket,
+        array $data
+    ): Ticket {
+
+        $this->ensureAcceptable($ticket);
+
+        return $this->transaction(function () use (
+            $ticket,
+            $data
+        ) {
+
+            $status = $data['result'] === TicketStatusCode::Closed->value
+                ? TicketStatusCode::Closed
+                : TicketStatusCode::Assigned;
+
+            $ticket->update([
+
+                'ticket_status_id' => $this->resolveStatusId($status),
+
+                'closed_by' => $status === TicketStatusCode::Closed
+                    ? auth()->id()
+                    : null,
+
+                'closed_at' => $status === TicketStatusCode::Closed
+                    ? now()
+                    : null,
+
+                'close_notes' => $data['close_notes'],
+
+            ]);
+
+            $ticket->refresh();
+
+            $this->createProgress(
+                $ticket,
+                [
+                    'progress_notes' =>
+                    $status === TicketStatusCode::Closed
+
+                        ? 'Ticket accepted by client. ' . $data['close_notes']
+
+                        : 'Acceptance rejected. ' . $data['close_notes'],
+
+                ]
+
+            );
+
+            return $this->show($ticket);
+        });
+    }
+
+    /**
      * Delete ticket.
      */
     public function delete(
@@ -511,6 +575,8 @@ class TicketService extends BaseService
                 'requester',
 
                 'reviewer',
+
+                'closer',
 
                 'applicationFeature.application',
 
@@ -816,6 +882,25 @@ class TicketService extends BaseService
             abort(
                 422,
                 'Only in progress ticket can be resolved.'
+            );
+        }
+    }
+
+    /**
+     * Ensure ticket can be accepted.
+     */
+    private function ensureAcceptable(
+        Ticket $ticket
+    ): void {
+
+        if (
+            $ticket->status->code !==
+            TicketStatusCode::Resolved->value
+        ) {
+
+            abort(
+                422,
+                'Only resolved ticket can be accepted.'
             );
         }
     }

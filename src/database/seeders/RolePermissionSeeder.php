@@ -219,6 +219,8 @@ class RolePermissionSeeder extends Seeder
             'sla.view',
 
             'application-feature.view',
+            
+            'ticket.close',
         ];
 
         // Client User
