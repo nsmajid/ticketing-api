@@ -8,6 +8,7 @@ use App\Ticket\Controllers\TicketController;
 use App\TicketCategory\Controllers\TicketCategoryController;
 use App\TicketPriority\Controllers\TicketPriorityController;
 use App\TicketStatus\Controllers\TicketStatusController;
+use App\TicketWaitingFor\Controllers\TicketWaitingForController;
 use App\User\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('sla-rules', SlaRuleController::class);
     Route::apiResource('applications', ApplicationController::class);
     Route::apiResource('application-features', ApplicationFeatureController::class);
+    Route::apiResource('ticket-waiting-fors',TicketWaitingForController::class);
     Route::apiResource('tickets', TicketController::class);
 
     Route::prefix('tickets')->group(function () {

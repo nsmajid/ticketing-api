@@ -28,6 +28,8 @@ class UpdateTicketPriorityRequest extends FormRequest
                 'required',
                 'alpha_dash',
                 'max:100',
+                 Rule::unique('ticket_priorities', 'code')
+                    ->ignore($this->route('ticket_priority'))
             ],
 
             'description' => [

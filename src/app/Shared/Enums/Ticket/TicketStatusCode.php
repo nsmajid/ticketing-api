@@ -18,8 +18,9 @@ enum TicketStatusCode: string
     case Draft = 'DRAFT';
     case Submitted = 'SUBMITTED';
     case Reviewed = 'REVIEWED';
-    case PendingClient = 'PENDING_CLIENT';
-    case PendingVendor = 'PENDING_VENDOR';
+    // case PendingClient = 'PENDING_CLIENT';
+    // case PendingVendor = 'PENDING_VENDOR';
+    case Pending = 'PENDING';
     case Resolved = 'RESOLVED';
     case Cancelled = 'CANCELLED';
 
@@ -31,8 +32,9 @@ enum TicketStatusCode: string
             self::Reviewed => 'Reviewed',
             self::Assigned => 'Assigned',
             self::InProgress => 'In Progress',
-            self::PendingClient => 'Pending Client',
-            self::PendingVendor => 'Pending Vendor',
+            // self::PendingClient => 'Pending Client',
+            // self::PendingVendor => 'Pending Vendor',
+            self::Pending => 'Pending',
             self::Resolved => 'Resolved',
             self::Closed => 'Closed',
             self::Rejected => 'Rejected',

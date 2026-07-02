@@ -28,8 +28,8 @@ enum Permission: string
     case TicketUpdate = 'ticket.update';
     case TicketDelete = 'ticket.delete';
     case TicketReview = 'ticket.review';
-    // case TicketReject = 'ticket.reject';
-    // case TicketApprove = 'ticket.approve';
+        // case TicketReject = 'ticket.reject';
+        // case TicketApprove = 'ticket.approve';
     case TicketAssign = 'ticket.assign';
     case TicketReassign = 'ticket.reassign';
     case TicketClose = 'ticket.close';
@@ -89,4 +89,9 @@ enum Permission: string
     case ApplicationFeatureCreate = 'application-feature.create';
     case ApplicationFeatureUpdate = 'application-feature.update';
     case ApplicationFeatureDelete = 'application-feature.delete';
+
+    case TicketWaitingForView = 'ticket-waiting-for.view';
+    case TicketWaitingForCreate = 'ticket-waiting-for.create';
+    case TicketWaitingForUpdate = 'ticket-waiting-for.update';
+    case TicketWaitingForDelete = 'ticket-waiting-for.delete';
 }

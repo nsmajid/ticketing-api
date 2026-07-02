@@ -28,4 +28,14 @@ class TicketStatus extends Model
             Ticket::class
         );
     }
+
+    /**
+ * Ticket progresses.
+ */
+public function progresses(): HasMany
+{
+    return $this->hasMany(
+        TicketProgress::class
+    );
+}
 }
