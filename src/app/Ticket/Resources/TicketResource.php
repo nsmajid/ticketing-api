@@ -185,6 +185,43 @@ class TicketResource extends JsonResource
 
             'updated_at' => $this->updated_at?->toDateTimeString(),
 
+
+            /*
+|--------------------------------------------------------------------------
+| Assignment
+|--------------------------------------------------------------------------
+*/
+
+            'assigned_to' => $this->whenLoaded(
+                'activeAssignment',
+                fn() => $this->activeAssignment?->assigned_to
+            ),
+
+            'assignee_name' => $this->whenLoaded(
+                'activeAssignment',
+                fn() => $this->activeAssignment?->assignee?->name
+            ),
+
+            'assigned_by' => $this->whenLoaded(
+                'activeAssignment',
+                fn() => $this->activeAssignment?->assigned_by
+            ),
+
+            'assigner_name' => $this->whenLoaded(
+                'activeAssignment',
+                fn() => $this->activeAssignment?->assigner?->name
+            ),
+
+            'assigned_at' => $this->whenLoaded(
+                'activeAssignment',
+                fn() => $this->activeAssignment?->assigned_at?->toDateTimeString()
+            ),
+
+            'assignment_notes' => $this->whenLoaded(
+                'activeAssignment',
+                fn() => $this->activeAssignment?->assignment_notes
+            ),
+
         ];
     }
 }
