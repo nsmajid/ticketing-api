@@ -56,4 +56,26 @@ class User extends Authenticatable
             'reviewed_by'
         );
     }
+
+    /**
+     * Assignments received by this user.
+     */
+    public function assignedTickets(): HasMany
+    {
+        return $this->hasMany(
+            TicketAssignment::class,
+            'assigned_to'
+        );
+    }
+
+    /**
+     * Assignments created by this user.
+     */
+    public function createdAssignments(): HasMany
+    {
+        return $this->hasMany(
+            TicketAssignment::class,
+            'assigned_by'
+        );
+    }
 }

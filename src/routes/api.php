@@ -38,5 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
             '{ticket}/review',
             [TicketController::class, 'review']
         );
+
+        Route::post(
+            '{ticket}/assignments',
+            [TicketController::class, 'assign']
+        );
     });
 });

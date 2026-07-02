@@ -32,6 +32,7 @@ enum Permission: string
     // case TicketApprove = 'ticket.approve';
     case TicketAssign = 'ticket.assign';
     case TicketReassign = 'ticket.reassign';
+    case TicketClose = 'ticket.close';
 
         // Progress
     case ProgressView = 'progress.view';

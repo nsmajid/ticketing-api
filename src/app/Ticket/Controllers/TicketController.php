@@ -5,6 +5,8 @@ namespace App\Ticket\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Shared\Responses\ApiResponse;
+use App\Ticket\Requests\AssignTicketRequest;
+use App\Ticket\Requests\ReassignTicketRequest;
 use App\Ticket\Requests\ReviewTicketRequest;
 use App\Ticket\Requests\StoreTicketRequest;
 use App\Ticket\Requests\UpdateTicketRequest;
@@ -173,6 +175,28 @@ class TicketController extends Controller implements HasMiddleware
     }
 
     /**
+     * Create assignment.
+     */
+    public function assign(
+        AssignTicketRequest $request,
+        Ticket $ticket,
+    ) {
+        $ticket = $this->service->assign(
+            $ticket,
+            $request->validated()
+        );
+
+        return ApiResponse::success(
+
+            new TicketResource(
+                $ticket
+            ),
+
+            'Ticket assignment saved successfully.'
+
+        );
+    }
+    /**
      * Controller Middleware.
      */
     public static function middleware(): array
@@ -216,6 +240,12 @@ class TicketController extends Controller implements HasMiddleware
                 ]
             ),
 
+            new Middleware(
+                'permission:ticket.assign|ticket.reassign',
+                only: [
+                    'assign',
+                ]
+            ),
         ];
     }
 }

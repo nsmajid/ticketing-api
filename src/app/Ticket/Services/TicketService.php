@@ -5,7 +5,11 @@ namespace App\Ticket\Services;
 
 use App\Models\SlaRule;
 use App\Models\Ticket;
+use App\Models\TicketAssignableRole;
+use App\Models\TicketAssignment;
 use App\Models\TicketStatus;
+use App\Models\User;
+use App\Shared\Enums\System\Permission;
 use App\Shared\Enums\Ticket\TicketStatusCode;
 use App\Shared\Filters\BaseQueryFilter;
 use App\Shared\Filters\TicketFilter;
@@ -214,6 +218,124 @@ class TicketService extends BaseService
     }
 
     /**
+     * Create ticket assignment.
+     */
+    public function assign(
+        Ticket $ticket,
+        array $data
+    ): Ticket {
+        $currentAssignment = $ticket->activeAssignment;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Business Rule
+    |--------------------------------------------------------------------------
+    */
+
+        $this->ensureAssignableUser(
+            $data['assigned_to']
+        );
+
+        if ($currentAssignment) {
+
+            $this->ensureReassignable($ticket);
+
+            abort_unless(
+                auth()->user()->can(
+                    Permission::TicketReassign->value
+                ),
+                403
+            );
+
+            if ($currentAssignment->assigned_to == $data['assigned_to']) {
+                abort(
+                    422,
+                    'Ticket is already assigned to the selected user.'
+                );
+            }
+        } else {
+
+            $this->ensureAssignable($ticket);
+
+            abort_unless(
+                auth()->user()->can(
+                    Permission::TicketAssign->value
+                ),
+                403
+            );
+        }
+
+        return $this->transaction(function () use (
+            $ticket,
+            $data,
+            $currentAssignment
+        ) {
+
+            /*
+        |--------------------------------------------------------------------------
+        | Deactivate Current Assignment
+        |--------------------------------------------------------------------------
+        */
+
+            if ($currentAssignment) {
+
+                $currentAssignment->update([
+                    'is_active' => false,
+                ]);
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Create Assignment
+        |--------------------------------------------------------------------------
+        */
+
+            TicketAssignment::create([
+
+                'ticket_id' => $ticket->id,
+
+                'assigned_to' => $data['assigned_to'],
+
+                'assigned_by' => auth()->id(),
+
+                'assigned_at' => now(),
+
+                'assignment_notes' => $data['assignment_notes'],
+
+                'is_active' => true,
+
+            ]);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Update Ticket Status
+        |--------------------------------------------------------------------------
+        */
+
+            if (
+                $ticket->status->code ===
+                TicketStatusCode::Reviewed->value
+            ) {
+
+                $ticket->update([
+
+                    'ticket_status_id' => $this->resolveStatusId(
+                        TicketStatusCode::Assigned
+                    ),
+
+                ]);
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Step 18
+        |--------------------------------------------------------------------------
+        */
+
+            return $this->show($ticket);
+        });
+    }
+    /**
      * Delete ticket.
      */
     public function delete(
@@ -245,6 +367,10 @@ class TicketService extends BaseService
                 'priority',
 
                 'status',
+
+                'activeAssignment.assignee',
+
+                'activeAssignment.assigner',
 
             ]);
     }
@@ -401,6 +527,70 @@ class TicketService extends BaseService
         return TicketStatus::query()
             ->where('code', $code)
             ->value('id');
+    }
+
+    private function ensureAssignable(
+        Ticket $ticket
+    ): void {
+        if (
+            $ticket->status->code !==
+            TicketStatusCode::Reviewed->value
+        ) {
+            abort(
+                422,
+                'Only reviewed ticket can be assigned.'
+            );
+        }
+    }
+
+    private function ensureReassignable(
+        Ticket $ticket
+    ): void {
+        if (! in_array(
+
+            $ticket->status->code,
+
+            [
+
+                TicketStatusCode::Assigned->value,
+
+                TicketStatusCode::InProgress->value,
+
+                TicketStatusCode::PendingClient->value,
+
+                TicketStatusCode::PendingVendor->value,
+
+            ]
+
+        )) {
+
+            abort(
+                422,
+                'Ticket cannot be reassigned.'
+            );
+        }
+    }
+
+
+    private function ensureAssignableUser(
+        int $userId
+    ): void {
+
+        $user = User::with('roles')
+            ->findOrFail($userId);
+
+        $roleIds = TicketAssignableRole::query()
+            ->pluck('role_id');
+
+        if (! $user->roles()
+            ->whereIn('id', $roleIds)
+            ->exists()) {
+
+            abort(
+                422,
+                'Selected user cannot receive ticket assignment.'
+            );
+        }
     }
 
     protected function filteredPaginate(

@@ -26,7 +26,7 @@ class UserController extends Controller implements HasMiddleware
 
         $users = $this->service->index($request);
 
-        return ApiResponse::success(
+        return ApiResponse::paginated(
             UserResource::collection($users),
             'Users retrieved successfully.'
         );
