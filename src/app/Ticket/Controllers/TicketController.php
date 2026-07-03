@@ -12,6 +12,7 @@ use App\Ticket\Requests\ReviewTicketRequest;
 use App\Ticket\Requests\StoreTicketRequest;
 use App\Ticket\Requests\UpdateTicketRequest;
 use App\Ticket\Resources\TicketResource;
+use App\Ticket\Resources\TicketTimelineResource;
 use App\Ticket\Services\TicketService;
 use App\TicketProgress\Requests\PendingTicketRequest;
 use App\TicketProgress\Requests\ResolveTicketRequest;
@@ -90,6 +91,27 @@ class TicketController extends Controller implements HasMiddleware
         );
     }
 
+    /**
+     * Ticket timeline.
+     */
+    public function timeline(
+        Ticket $ticket
+    ) {
+
+        $timeline = $this->service->timeline(
+            $ticket
+        );
+
+        return ApiResponse::success(
+
+            TicketTimelineResource::collection(
+                $timeline
+            ),
+
+            'Ticket timeline retrieved successfully.'
+
+        );
+    }
     /**
      * Update the specified ticket.
      */
@@ -324,6 +346,8 @@ class TicketController extends Controller implements HasMiddleware
                 only: [
                     'index',
                     'show',
+                    'timeline',
+
                 ]
             ),
 
