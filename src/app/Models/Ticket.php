@@ -233,9 +233,8 @@ class Ticket extends Model
 
     public function assignments(): HasMany
     {
-        return $this->hasMany(
-            TicketAssignment::class
-        );
+        return $this->hasMany(TicketAssignment::class)
+            ->orderBy('created_at');
     }
 
     /**
@@ -253,9 +252,8 @@ class Ticket extends Model
      */
     public function progresses(): HasMany
     {
-        return $this->hasMany(
-            TicketProgress::class
-        );
+        return $this->hasMany(TicketProgress::class)
+            ->orderBy('created_at');
     }
     /**
      * Ticket closer.

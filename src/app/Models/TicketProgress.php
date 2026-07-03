@@ -25,6 +25,8 @@ class TicketProgress extends Model
 
         'ticket_status_id',
 
+        'action',
+
         'ticket_waiting_for_id',
 
         'user_id',
@@ -72,7 +74,8 @@ class TicketProgress extends Model
     public function ticketStatus(): BelongsTo
     {
         return $this->belongsTo(
-            TicketStatus::class
+            TicketStatus::class,
+            'ticket_status_id'
         );
     }
 
@@ -82,7 +85,8 @@ class TicketProgress extends Model
     public function ticketWaitingFor(): BelongsTo
     {
         return $this->belongsTo(
-            TicketWaitingFor::class
+            TicketWaitingFor::class,
+            'ticket_waiting_for_id'
         );
     }
 
@@ -92,7 +96,8 @@ class TicketProgress extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(
-            User::class
+            User::class,
+            'user_id'
         );
     }
 }

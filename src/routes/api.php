@@ -39,5 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('{ticket}/resume',[TicketController::class, 'resume']);
         Route::put('{ticket}/resolve',[TicketController::class, 'resolve']);
         Route::put('{ticket}/accept',[TicketController::class, 'accept']);
+        Route::get('{ticket}/timeline',[TicketController::class, 'timeline']);
     });
 });

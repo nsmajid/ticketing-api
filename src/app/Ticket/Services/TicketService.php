@@ -11,7 +11,9 @@ use App\Models\TicketProgress;
 use App\Models\TicketStatus;
 use App\Models\User;
 use App\Shared\Enums\System\Permission;
+use App\Shared\Enums\Ticket\TicketProgressAction;
 use App\Shared\Enums\Ticket\TicketStatusCode;
+use App\Shared\Enums\Ticket\TicketTimelineAction;
 use App\Shared\Filters\BaseQueryFilter;
 use App\Shared\Filters\TicketFilter;
 use App\Shared\Services\BaseService;
@@ -19,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class TicketService extends BaseService
 {
@@ -351,7 +354,10 @@ class TicketService extends BaseService
      */
     private function createProgress(
         Ticket $ticket,
-        array $data
+        TicketProgressAction $action,
+        ?string $progressNotes = null,
+        ?int $waitingForId = null,
+        ?string $resolutionNotes = null,
     ): void {
 
         TicketProgress::create([
@@ -360,13 +366,15 @@ class TicketService extends BaseService
 
             'ticket_status_id' => $ticket->ticket_status_id,
 
-            'ticket_waiting_for_id' => $data['ticket_waiting_for_id'] ?? null,
+            'action' => $action->value,
+
+            'ticket_waiting_for_id' => $waitingForId,
 
             'user_id' => auth()->id(),
 
-            'progress_notes' => $data['progress_notes'] ?? null,
+            'progress_notes' => $progressNotes,
 
-            'resolution_notes' => $data['resolution_notes'] ?? null,
+            'resolution_notes' => $resolutionNotes,
 
         ]);
     }
@@ -396,7 +404,9 @@ class TicketService extends BaseService
 
             $this->createProgress(
                 $ticket,
-                $data
+                TicketProgressAction::Start,
+                $data['progress_notes'] ?? null,
+
             );
 
             return $this->show($ticket);
@@ -427,7 +437,9 @@ class TicketService extends BaseService
 
             $this->createProgress(
                 $ticket,
-                $data
+                TicketProgressAction::Pending,
+                $data['progress_notes'],
+                $data['ticket_waiting_for_id'],
             );
 
             return $this->show($ticket);
@@ -458,7 +470,8 @@ class TicketService extends BaseService
 
             $this->createProgress(
                 $ticket,
-                $data
+                TicketProgressAction::Resume,
+                $data['progress_notes'],
             );
 
             return $this->show($ticket);
@@ -489,7 +502,10 @@ class TicketService extends BaseService
 
             $this->createProgress(
                 $ticket,
-                $data
+                TicketProgressAction::Resolved,
+                null,
+                null,
+                $data['resolution_notes'],
             );
 
             return $this->show($ticket);
@@ -515,6 +531,26 @@ class TicketService extends BaseService
                 ? TicketStatusCode::Closed
                 : TicketStatusCode::Assigned;
 
+
+
+            if ($status === TicketStatusCode::Closed) {
+                $this->createProgress(
+                    $ticket,
+                    TicketProgressAction::AcceptanceApproved,
+                    $data['close_notes'],
+
+                );
+            } else {
+                $this->createProgress(
+                    $ticket,
+                    TicketProgressAction::AcceptanceRejected,
+                    'Acceptance rejected. ' . $data['close_notes'],
+
+                );
+            }
+
+            $ticket->refresh();
+
             $ticket->update([
 
                 'ticket_status_id' => $this->resolveStatusId($status),
@@ -531,24 +567,377 @@ class TicketService extends BaseService
 
             ]);
 
-            $ticket->refresh();
+            // $this->createProgress(
+            //     $ticket,
+            //     [
+            //         'progress_notes' =>
+            //         $status === TicketStatusCode::Closed
 
-            $this->createProgress(
-                $ticket,
-                [
-                    'progress_notes' =>
-                    $status === TicketStatusCode::Closed
+            //             ? 'Ticket accepted by client. ' . $data['close_notes']
 
-                        ? 'Ticket accepted by client. ' . $data['close_notes']
+            //             : 'Acceptance rejected. ' . $data['close_notes'],
 
-                        : 'Acceptance rejected. ' . $data['close_notes'],
+            //     ]
 
-                ]
-
-            );
+            // );
 
             return $this->show($ticket);
         });
+    }
+
+    /**
+     * Ticket timeline.
+     */
+    public function timeline(
+        Ticket $ticket
+    ): Collection {
+
+        $ticket->load([
+
+            'requester',
+
+            'reviewer',
+
+            'closer',
+
+            'status',
+
+            'assignments.assigner',
+
+            'assignments.assignee',
+
+            'progresses.user',
+
+            'progresses.ticketWaitingFor',
+
+        ]);
+
+        return collect()
+
+            ->merge(
+                $this->buildCreatedTimeline($ticket)
+            )
+
+            ->merge(
+                $this->buildSubmittedTimeline($ticket)
+            )
+
+            ->merge(
+                $this->buildReviewTimeline($ticket)
+            )
+
+            ->merge(
+                $this->buildAssignmentTimeline($ticket)
+            )
+
+            ->merge(
+                $this->buildProgressTimeline($ticket)
+            )
+
+            ->merge(
+                $this->buildClosedTimeline($ticket)
+            )
+
+            ->sortBy('time')
+
+            ->values();
+    }
+
+    /**
+     * Build timeline item.
+     */
+    private function buildTimeline(
+        mixed $time,
+        string $action,
+        string $title,
+        ?string $description,
+        ?User $user = null,
+        array $metadata = [],
+    ): array {
+
+        return [
+
+            'time' => $time,
+
+            'action' => $action,
+
+            'title' => $title,
+
+            'description' => $description,
+
+            'user' => $user,
+
+            'metadata' => $metadata,
+
+        ];
+    }
+
+    /**
+     * Build created timeline.
+     */
+    private function buildCreatedTimeline(
+        Ticket $ticket
+    ): Collection {
+
+
+
+        return collect([
+            $this->buildTimeline(
+
+                time: $ticket->created_at,
+
+                action: TicketTimelineAction::Created->value,
+
+                title: 'Ticket Created',
+
+                description: 'Ticket created as Draft.',
+
+                user: $ticket->requester,
+
+            ),
+        ]);
+    }
+
+    /**
+     * Build submitted timeline.
+     */
+    private function buildSubmittedTimeline(
+        Ticket $ticket
+    ): Collection {
+
+        if (!$ticket->submitted_at) {
+
+            return collect();
+        }
+
+        return collect([
+
+            $this->buildTimeline(
+
+                time: $ticket->submitted_at,
+
+                action: TicketTimelineAction::Submitted->value,
+
+                title: 'Ticket Submitted',
+
+                description: 'Ticket submitted for review.',
+
+                user: $ticket->requester,
+
+            ),
+
+        ]);
+    }
+
+    /**
+     * Build review timeline.
+     */
+    private function buildReviewTimeline(
+        Ticket $ticket
+    ): Collection {
+
+        if (!$ticket->reviewed_at) {
+
+            return collect();
+        }
+
+        $action = $ticket->ticket_status_id === $this->resolveStatusId(
+            TicketStatusCode::Rejected
+        )
+            ? TicketTimelineAction::Rejected
+            : TicketTimelineAction::Reviewed;
+
+        $title = $action === TicketTimelineAction::Rejected
+            ? 'Ticket Rejected'
+            : 'Ticket Reviewed';
+
+        return collect([
+            $this->buildTimeline(
+
+                time: $ticket->reviewed_at,
+
+                action: $action->value,
+
+                title: $title,
+
+                description: $ticket->review_notes,
+
+                user: $ticket->reviewer,
+
+            ),
+
+        ]);
+    }
+
+    /**
+     * Build assignment timeline.
+     */
+    private function buildAssignmentTimeline(
+        Ticket $ticket
+    ): Collection {
+
+        return $ticket->assignments
+
+            ->values()
+
+            ->map(function (
+                TicketAssignment $assignment,
+                int $index
+            ) {
+
+                $isReassign = $index > 0;
+
+                return $this->buildTimeline(
+
+                    time: $assignment->assigned_at,
+
+                    action: $isReassign
+                        ? TicketTimelineAction::Reassigned->value
+                        : TicketTimelineAction::Assigned->value,
+
+                    title: $isReassign
+                        ? 'Ticket Reassigned'
+                        : 'Ticket Assigned',
+
+                    description: $assignment->assignment_notes,
+
+                    user: $assignment->assigner,
+
+                    metadata: [
+
+                        'assigned_to' => $this->buildUserMetadata(
+                            $assignment->assignee
+                        ),
+
+                    ],
+
+                );
+            });
+    }
+
+    /**
+     * Build user metadata.
+     */
+    private function buildUserMetadata(
+        ?User $user
+    ): ?array {
+
+        if (!$user) {
+
+            return null;
+        }
+
+        return [
+
+            'id' => $user->id,
+
+            'name' => $user->name,
+
+        ];
+    }
+
+    /**
+     * Build progress timeline.
+     */
+    private function buildProgressTimeline(
+        Ticket $ticket
+    ): Collection {
+
+        return $ticket->progresses
+
+            ->map(function ($progress) {
+
+                $title = match ($progress->action) {
+
+                    TicketProgressAction::Start->value
+                    => 'Start Progress',
+
+                    TicketProgressAction::Pending->value
+                    => 'Ticket Pending',
+
+                    TicketProgressAction::Resume->value
+                    => 'Resume Progress',
+
+                    TicketProgressAction::Resolved->value
+                    => 'Ticket Resolved',
+
+                    TicketProgressAction::AcceptanceRejected->value
+                    => 'Acceptance Rejected',
+
+                    TicketProgressAction::AcceptanceApproved->value
+                    => 'Ticket Accepted',
+
+                    default
+                    => 'Progress',
+                };
+
+                $metadata = [];
+
+                if ($progress->ticketWaitingFor) {
+
+                    $metadata['waiting_for'] = [
+
+                        'id' => $progress->ticketWaitingFor->id,
+
+                        'name' => $progress->ticketWaitingFor->name,
+
+                    ];
+                }
+
+                return  $this->buildTimeline(
+
+                    time: $progress->created_at,
+
+                    action: $progress->action,
+
+                    title: $title,
+
+                    description: $progress->resolution_notes
+                        ?? $progress->progress_notes,
+
+                    user: $progress->user,
+
+                    metadata: [
+                        'waiting_for' => $metadata
+                    ]
+
+                );
+            })
+
+            ->values();
+    }
+
+    /**
+     * Build closed timeline.
+     */
+    private function buildClosedTimeline(
+        Ticket $ticket
+    ): Collection {
+
+        if (!$ticket->closed_at) {
+
+            return collect();
+        }
+
+        return collect([
+
+            $this->buildTimeline(
+
+                time: $ticket->closed_at,
+
+                action: TicketTimelineAction::Closed->value,
+
+                title: 'Ticket Closed',
+
+                description: $ticket->close_notes,
+
+                user: $ticket->closer,
+
+                metadata: [],
+
+            ),
+
+        ]);
     }
 
     /**
