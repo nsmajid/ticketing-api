@@ -75,7 +75,7 @@ class RolePermissionSeeder extends Seeder
             'change.approve',
             'change.reject',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
             'attachment.delete',
 
@@ -115,7 +115,7 @@ class RolePermissionSeeder extends Seeder
             'estimation.create',
             'estimation.update',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
@@ -150,7 +150,7 @@ class RolePermissionSeeder extends Seeder
             'progress.create',
             'progress.update',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
@@ -184,7 +184,7 @@ class RolePermissionSeeder extends Seeder
 
             'progress.view',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
@@ -213,13 +213,13 @@ class RolePermissionSeeder extends Seeder
             'change.approve',
             'change.reject',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
 
             'application-feature.view',
-            
+
             'ticket.close',
         ];
 
@@ -235,7 +235,7 @@ class RolePermissionSeeder extends Seeder
 
             'progress.view',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',

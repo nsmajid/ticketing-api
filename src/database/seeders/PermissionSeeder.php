@@ -326,25 +326,25 @@ class PermissionSeeder extends Seeder
             ],
 
             /*
-    |--------------------------------------------------------------------------
-    | Attachment
-    |--------------------------------------------------------------------------
-    */
-
-            [
-                'name' => 'attachment.view',
-                'label' => 'View Attachment',
-                'group' => 'Attachment',
-                'description' => 'Can view attachment',
-                'sort_order' => 700,
-            ],
+|--------------------------------------------------------------------------
+| Attachment
+|--------------------------------------------------------------------------
+*/
 
             [
                 'name' => 'attachment.upload',
                 'label' => 'Upload Attachment',
                 'group' => 'Attachment',
                 'description' => 'Can upload attachment',
-                'sort_order' => 701,
+                'sort_order' => 1901,
+            ],
+
+            [
+                'name' => 'attachment.download',
+                'label' => 'Download Attachment',
+                'group' => 'Attachment',
+                'description' => 'Can download attachment',
+                'sort_order' => 1902,
             ],
 
             [
@@ -352,7 +352,7 @@ class PermissionSeeder extends Seeder
                 'label' => 'Delete Attachment',
                 'group' => 'Attachment',
                 'description' => 'Can delete attachment',
-                'sort_order' => 702,
+                'sort_order' => 1903,
             ],
 
             /*
@@ -660,7 +660,7 @@ class PermissionSeeder extends Seeder
                 'description' => 'Can start progress, pending and resume ticket.',
                 'sort_order' => 364,
             ],
-           
+
             [
                 'name' => 'ticket.resolve',
                 'label' => 'Ticket Resolve',
