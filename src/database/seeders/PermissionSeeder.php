@@ -669,6 +669,36 @@ class PermissionSeeder extends Seeder
                 'sort_order' => 365,
             ],
 
+            /*
+|--------------------------------------------------------------------------
+| Ticket Comment
+|--------------------------------------------------------------------------
+*/
+
+            [
+                'name' => 'ticket.comment.create',
+                'label' => 'Create Ticket Comment',
+                'group' => 'Ticket Comment',
+                'description' => 'Can create ticket comment',
+                'sort_order' => 2001,
+            ],
+
+            [
+                'name' => 'ticket.comment.update',
+                'label' => 'Update Ticket Comment',
+                'group' => 'Ticket Comment',
+                'description' => 'Can update ticket comment',
+                'sort_order' => 2002,
+            ],
+
+            [
+                'name' => 'ticket.comment.delete',
+                'label' => 'Delete Ticket Comment',
+                'group' => 'Ticket Comment',
+                'description' => 'Can delete ticket comment',
+                'sort_order' => 2003,
+            ],
+
         ];
 
         foreach ($permissions as $permission) {

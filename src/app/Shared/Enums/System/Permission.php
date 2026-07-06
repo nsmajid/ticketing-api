@@ -97,4 +97,8 @@ enum Permission: string
 
     case TicketProgress = 'ticket.progress';
     case TicketResolve = 'ticket.resolve';
+
+    case TicketCommentCreate = 'ticket.comment.create';
+    case TicketCommentUpdate = 'ticket.comment.update';
+    case TicketCommentDelete = 'ticket.comment.delete';
 }
