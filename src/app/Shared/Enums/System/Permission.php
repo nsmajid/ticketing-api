@@ -49,7 +49,7 @@ enum Permission: string
     case ChangeReject = 'change.reject';
 
         // Attachment
-    case AttachmentView = 'attachment.view';
+    case AttachmentDownload = 'attachment.download';
     case AttachmentUpload = 'attachment.upload';
     case AttachmentDelete = 'attachment.delete';
 
