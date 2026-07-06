@@ -7,6 +7,7 @@ use App\Auth\Controllers\AuthController;
 use App\Sla\Controllers\SlaRuleController;
 use App\Ticket\Controllers\TicketController;
 use App\TicketCategory\Controllers\TicketCategoryController;
+use App\TicketComment\Controllers\TicketCommentController;
 use App\TicketPriority\Controllers\TicketPriorityController;
 use App\TicketStatus\Controllers\TicketStatusController;
 use App\TicketWaitingFor\Controllers\TicketWaitingForController;
@@ -41,6 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('{ticket}/resolve', [TicketController::class, 'resolve']);
         Route::put('{ticket}/accept', [TicketController::class, 'accept']);
         Route::get('{ticket}/timeline', [TicketController::class, 'timeline']);
+
+        Route::get('/{ticket}/comments', [TicketCommentController::class, 'index']);
+        Route::post('/{ticket}/comments', [TicketCommentController::class, 'store']);
+        Route::get('/{ticket}/comments/{comment}', [TicketCommentController::class, 'show']);
+        Route::put('/{ticket}/comments/{comment}', [TicketCommentController::class, 'update']);
+        Route::delete('/{ticket}/comments/{comment}', [TicketCommentController::class, 'destroy']);
     });
 
 

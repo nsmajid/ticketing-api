@@ -94,6 +94,13 @@ class RolePermissionSeeder extends Seeder
 
             'ticket.progress',
             'ticket.resolve',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Developer
@@ -129,6 +136,13 @@ class RolePermissionSeeder extends Seeder
             'ticket.progress',
             'ticket.resolve',
 
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
+
         ];
 
         // QA
@@ -163,6 +177,13 @@ class RolePermissionSeeder extends Seeder
 
             'ticket.progress',
             'ticket.resolve',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Support
@@ -193,7 +214,13 @@ class RolePermissionSeeder extends Seeder
 
             'application-feature.view',
 
-            'ticket-waiting-for.view'
+            'ticket-waiting-for.view',
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Client Admin
@@ -221,6 +248,13 @@ class RolePermissionSeeder extends Seeder
             'application-feature.view',
 
             'ticket.close',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Client User
@@ -241,6 +275,13 @@ class RolePermissionSeeder extends Seeder
             'sla.view',
 
             'application-feature.view',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
 
