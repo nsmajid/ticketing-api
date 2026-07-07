@@ -2,6 +2,7 @@
 
 namespace App\TicketComment\Resources;
 
+use App\Attachment\Resources\AttachmentResource;
 use App\User\Resources\UserSimpleResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,7 +26,14 @@ class TicketCommentResource extends JsonResource
 
             'content' => $this->content,
 
-            'attachments' => [],
+            'attachments' => AttachmentResource::collection(
+
+                $this->whenLoaded('attachmentUsages')
+                    ->pluck('attachment')
+                    ->filter()
+                    ->values()
+
+            ),
 
             'created_at' => $this->created_at?->format(
                 'Y-m-d H:i:s'
@@ -37,11 +45,10 @@ class TicketCommentResource extends JsonResource
 
             'is_edited' =>
 
-                $this->updated_at?->ne(
-                    $this->created_at
-                ),
+            $this->updated_at?->ne(
+                $this->created_at
+            ),
 
         ];
-
     }
 }

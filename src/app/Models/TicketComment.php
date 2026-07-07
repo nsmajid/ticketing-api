@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Shared\Enums\Attachment\AttachmentOwnerType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TicketComment extends Model
 {
@@ -38,5 +40,20 @@ class TicketComment extends Model
         return $this->belongsTo(
             User::class
         );
+    }
+
+    /**
+     * Attachment usages.
+     */
+    public function attachmentUsages(): HasMany
+    {
+        return $this->hasMany(
+            AttachmentUsage::class,
+            'owner_id'
+        )
+            ->where(
+                'owner_type',
+                AttachmentOwnerType::TicketComment
+            );
     }
 }

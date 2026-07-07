@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Shared\Enums\Attachment\AttachmentOwnerType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -85,12 +86,16 @@ class Attachment extends Model
     /**
      * Attachment usages.
      */
-    // public function usages(): HasMany
-    // {
-    //     return $this->hasMany(
-    //         AttachmentUsage::class
-    //     );
-    // }
+    public function attachmentUsages(): HasMany
+    {
+        return $this->hasMany(
+            AttachmentUsage::class,
+            'owner_id'
+        )->where(
+            'owner_type',
+            AttachmentOwnerType::TicketComment
+        );
+    }
 
     /**
      * Resolve attachment by ULID.

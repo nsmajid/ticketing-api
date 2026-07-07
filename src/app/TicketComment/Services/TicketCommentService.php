@@ -2,8 +2,12 @@
 
 namespace App\TicketComment\Services;
 
+use App\Attachment\Services\AttachmentParserService;
+use App\Attachment\Services\AttachmentQueryService;
+use App\Attachment\Services\AttachmentUsageService;
 use App\Models\Ticket;
 use App\Models\TicketComment;
+use App\Shared\Enums\Attachment\AttachmentOwnerType;
 use App\Shared\Enums\System\Role;
 use App\Shared\Enums\Ticket\TicketStatusCode;
 use App\Shared\Services\BaseService;
@@ -13,6 +17,13 @@ use Illuminate\Http\Request;
 
 class TicketCommentService extends BaseService
 {
+    public function __construct(
+        private AttachmentParserService $attachmentParser,
+        private AttachmentUsageService $attachmentUsage,
+        private AttachmentQueryService $attachmentQuery,
+
+    ) {}
+
     /**
      * Display listing.
      */
@@ -72,11 +83,25 @@ class TicketCommentService extends BaseService
             ]);
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 21
-            |--------------------------------------------------------------------------
-            | Attachment Parser
-            */
+        |--------------------------------------------------------------------------
+        | Attachment Usage
+        |--------------------------------------------------------------------------
+        */
+
+            $attachmentIds = $this->attachmentParser
+                ->attachmentIds(
+                    $comment->content
+                );
+
+            $this->attachmentUsage->sync(
+
+                AttachmentOwnerType::TicketComment,
+
+                $comment->id,
+
+                $attachmentIds
+
+            );
 
             return $this->show($comment);
         });
@@ -106,11 +131,25 @@ class TicketCommentService extends BaseService
             ]);
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 21
-            |--------------------------------------------------------------------------
-            | Attachment Parser
-            */
+        |--------------------------------------------------------------------------
+        | Attachment Usage
+        |--------------------------------------------------------------------------
+        */
+
+            $attachmentIds = $this->attachmentParser
+                ->attachmentIds(
+                    $comment->content
+                );
+
+            $this->attachmentUsage->sync(
+
+                AttachmentOwnerType::TicketComment,
+
+                $comment->id,
+
+                $attachmentIds
+
+            );
 
             return $this->show($comment);
         });
@@ -130,11 +169,19 @@ class TicketCommentService extends BaseService
         ) {
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 21
-            |--------------------------------------------------------------------------
-            | Attachment Usage Cleanup
-            */
+        |--------------------------------------------------------------------------
+        | Delete Attachment Usage
+        |--------------------------------------------------------------------------
+        */
+
+            $this->attachmentUsage
+                ->deleteOwner(
+
+                    AttachmentOwnerType::TicketComment,
+
+                    $comment->id
+
+                );
 
             $comment->delete();
         });
@@ -148,11 +195,9 @@ class TicketCommentService extends BaseService
         return TicketComment::query()
 
             ->with([
-
                 'user',
-
                 'ticket',
-
+                'attachmentUsages.attachment',
             ])
 
             ->orderBy('id');
@@ -227,9 +272,9 @@ class TicketCommentService extends BaseService
             );
         }
 
-        
+
         if (
-           $comment->ticket->status->code ===
+            $comment->ticket->status->code ===
             TicketStatusCode::Draft->value
         ) {
 
