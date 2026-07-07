@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Shared\Enums\Attachment\AttachmentOwnerType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -233,9 +234,8 @@ class Ticket extends Model
 
     public function assignments(): HasMany
     {
-        return $this->hasMany(
-            TicketAssignment::class
-        );
+        return $this->hasMany(TicketAssignment::class)
+            ->orderBy('created_at');
     }
 
     /**
@@ -253,9 +253,8 @@ class Ticket extends Model
      */
     public function progresses(): HasMany
     {
-        return $this->hasMany(
-            TicketProgress::class
-        );
+        return $this->hasMany(TicketProgress::class)
+            ->orderBy('created_at');
     }
     /**
      * Ticket closer.
@@ -267,4 +266,20 @@ class Ticket extends Model
             'closed_by'
         );
     }
+
+    /**
+     * Attachment usages.
+     */
+    public function attachmentUsages(): HasMany
+    {
+        return $this->hasMany(
+            AttachmentUsage::class,
+            'owner_id'
+        )
+            ->where(
+                'owner_type',
+                AttachmentOwnerType::Ticket
+            );
+    }
+    
 }

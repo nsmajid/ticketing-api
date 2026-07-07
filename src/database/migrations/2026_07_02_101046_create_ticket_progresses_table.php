@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignId('ticket_status_id')
                 ->constrained()
                 ->restrictOnDelete();
+            $table->string('action', 50);
 
             $table->foreignId('ticket_waiting_for_id')
                 ->nullable()

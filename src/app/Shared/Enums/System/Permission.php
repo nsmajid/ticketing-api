@@ -49,7 +49,7 @@ enum Permission: string
     case ChangeReject = 'change.reject';
 
         // Attachment
-    case AttachmentView = 'attachment.view';
+    case AttachmentDownload = 'attachment.download';
     case AttachmentUpload = 'attachment.upload';
     case AttachmentDelete = 'attachment.delete';
 
@@ -97,4 +97,8 @@ enum Permission: string
 
     case TicketProgress = 'ticket.progress';
     case TicketResolve = 'ticket.resolve';
+
+    case TicketCommentCreate = 'ticket.comment.create';
+    case TicketCommentUpdate = 'ticket.comment.update';
+    case TicketCommentDelete = 'ticket.comment.delete';
 }

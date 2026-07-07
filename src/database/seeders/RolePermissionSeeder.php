@@ -75,7 +75,7 @@ class RolePermissionSeeder extends Seeder
             'change.approve',
             'change.reject',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
             'attachment.delete',
 
@@ -94,6 +94,13 @@ class RolePermissionSeeder extends Seeder
 
             'ticket.progress',
             'ticket.resolve',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Developer
@@ -115,7 +122,7 @@ class RolePermissionSeeder extends Seeder
             'estimation.create',
             'estimation.update',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
@@ -128,6 +135,13 @@ class RolePermissionSeeder extends Seeder
 
             'ticket.progress',
             'ticket.resolve',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
 
         ];
 
@@ -150,7 +164,7 @@ class RolePermissionSeeder extends Seeder
             'progress.create',
             'progress.update',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
@@ -163,6 +177,13 @@ class RolePermissionSeeder extends Seeder
 
             'ticket.progress',
             'ticket.resolve',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Support
@@ -184,7 +205,7 @@ class RolePermissionSeeder extends Seeder
 
             'progress.view',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
@@ -193,7 +214,13 @@ class RolePermissionSeeder extends Seeder
 
             'application-feature.view',
 
-            'ticket-waiting-for.view'
+            'ticket-waiting-for.view',
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Client Admin
@@ -213,14 +240,21 @@ class RolePermissionSeeder extends Seeder
             'change.approve',
             'change.reject',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
 
             'application-feature.view',
-            
+
             'ticket.close',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
         // Client User
@@ -235,12 +269,19 @@ class RolePermissionSeeder extends Seeder
 
             'progress.view',
 
-            'attachment.view',
+            'attachment.download',
             'attachment.upload',
 
             'sla.view',
 
             'application-feature.view',
+
+
+            'ticket.comment.create',
+
+            'ticket.comment.update',
+
+            'ticket.comment.delete',
         ];
 
 
