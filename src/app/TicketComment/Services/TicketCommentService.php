@@ -2,8 +2,6 @@
 
 namespace App\TicketComment\Services;
 
-use App\Attachment\Services\AttachmentParserService;
-use App\Attachment\Services\AttachmentQueryService;
 use App\Attachment\Services\AttachmentUsageService;
 use App\Models\Ticket;
 use App\Models\TicketComment;
@@ -18,9 +16,7 @@ use Illuminate\Http\Request;
 class TicketCommentService extends BaseService
 {
     public function __construct(
-        private AttachmentParserService $attachmentParser,
         private AttachmentUsageService $attachmentUsage,
-        private AttachmentQueryService $attachmentQuery,
 
     ) {}
 
@@ -88,10 +84,6 @@ class TicketCommentService extends BaseService
         |--------------------------------------------------------------------------
         */
 
-            $attachmentIds = $this->attachmentParser
-                ->attachmentIds(
-                    $comment->content
-                );
 
             $this->attachmentUsage->sync(
 
@@ -99,7 +91,7 @@ class TicketCommentService extends BaseService
 
                 $comment->id,
 
-                $attachmentIds
+                $comment->content
 
             );
 
@@ -136,18 +128,11 @@ class TicketCommentService extends BaseService
         |--------------------------------------------------------------------------
         */
 
-            $attachmentIds = $this->attachmentParser
-                ->attachmentIds(
-                    $comment->content
-                );
 
             $this->attachmentUsage->sync(
-
                 AttachmentOwnerType::TicketComment,
-
                 $comment->id,
-
-                $attachmentIds
+                $comment->content
 
             );
 

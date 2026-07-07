@@ -3,6 +3,7 @@
 namespace App\Ticket\Services;
 
 
+use App\Attachment\Services\AttachmentUsageService;
 use App\Models\SlaRule;
 use App\Models\Ticket;
 use App\Models\TicketAssignableRole;
@@ -10,6 +11,7 @@ use App\Models\TicketAssignment;
 use App\Models\TicketProgress;
 use App\Models\TicketStatus;
 use App\Models\User;
+use App\Shared\Enums\Attachment\AttachmentOwnerType;
 use App\Shared\Enums\System\Permission;
 use App\Shared\Enums\Ticket\TicketProgressAction;
 use App\Shared\Enums\Ticket\TicketStatusCode;
@@ -25,6 +27,10 @@ use Illuminate\Support\Collection;
 
 class TicketService extends BaseService
 {
+    public function __construct(
+        private AttachmentUsageService $attachmentUsage,
+
+    ) {}
     /**
      * Display listing.
      */
@@ -92,6 +98,23 @@ class TicketService extends BaseService
 
             ]);
 
+            /*
+        |--------------------------------------------------------------------------
+        | Attachment Usage
+        |--------------------------------------------------------------------------
+        */
+
+
+            $this->attachmentUsage->sync(
+
+                AttachmentOwnerType::Ticket,
+
+                $ticket->id,
+
+                $ticket->description
+
+            );
+
             return $this->show($ticket);
         });
     }
@@ -144,6 +167,16 @@ class TicketService extends BaseService
                 'close_notes' => null,
 
             ]);
+
+            $this->attachmentUsage->sync(
+
+                AttachmentOwnerType::Ticket,
+
+                $ticket->id,
+
+                $ticket->description
+
+            );
 
             return $this->show($ticket);
         });
@@ -948,7 +981,14 @@ class TicketService extends BaseService
     ): void {
 
         $this->ensureDeletable($ticket);
+        $this->attachmentUsage
+            ->deleteOwner(
 
+                AttachmentOwnerType::Ticket,
+
+                $ticket->id
+
+            );
         $ticket->delete();
     }
 
@@ -978,6 +1018,9 @@ class TicketService extends BaseService
                 'activeAssignment.assignee',
 
                 'activeAssignment.assigner',
+                
+                'attachmentUsages.attachment',
+
 
             ]);
     }
