@@ -2,6 +2,7 @@
 
 namespace App\Ticket\Resources;
 
+use App\Attachment\Resources\AttachmentResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -158,6 +159,14 @@ class TicketResource extends JsonResource
             'subject' => $this->subject,
 
             'description' => $this->description,
+            'attachments' => AttachmentResource::collection(
+
+                $this->whenLoaded('attachmentUsages')
+                    ->pluck('attachment')
+                    ->filter()
+                    ->values()
+
+            ),
 
             /*
             |--------------------------------------------------------------------------

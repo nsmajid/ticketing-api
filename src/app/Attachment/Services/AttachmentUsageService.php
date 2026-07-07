@@ -2,6 +2,7 @@
 
 namespace App\Attachment\Services;
 
+use App\Attachment\Services\AttachmentParserService;
 use App\Models\Attachment;
 use App\Models\AttachmentUsage;
 use App\Shared\Enums\Attachment\AttachmentOwnerType;
@@ -11,21 +12,39 @@ use Illuminate\Support\Collection;
 
 class AttachmentUsageService extends BaseService
 {
+    public function __construct(
+        private AttachmentParserService $attachmentParser,
+
+    ) {}
+
     /**
      * Synchronize attachment usages.
      */
     public function sync(
         AttachmentOwnerType $ownerType,
         int $ownerId,
-        Collection $attachmentIds
+        ?string $markdown
     ): void {
 
+
+        $attachmentIds = $this->attachmentParser
+            ->attachmentIds($markdown);
+
+        $attachments = Attachment::query()
+            ->whereIn(
+                'id',
+                $attachmentIds
+            )
+            ->get();
+
+        $this->validateAttachments(
+            $attachments,
+            $attachmentIds
+        );
+
         $this->transaction(function () use (
-
             $ownerType,
-
             $ownerId,
-
             $attachmentIds
 
         ) {
@@ -67,22 +86,18 @@ class AttachmentUsageService extends BaseService
             if ($removeIds->isNotEmpty()) {
 
                 $this->baseQuery()
-
                     ->where(
                         'owner_type',
                         $ownerType->value
                     )
-
                     ->where(
                         'owner_id',
                         $ownerId
                     )
-
                     ->whereIn(
                         'attachment_id',
                         $removeIds
                     )
-
                     ->delete();
             }
 
@@ -188,5 +203,71 @@ class AttachmentUsageService extends BaseService
                 'expired_at' => null,
 
             ]);
+    }
+
+    /**
+     * Validate attachments before creating usages.
+     *
+     * @param Collection<int, Attachment> $attachments
+     * @param Collection<int, int> $attachmentIds
+     */
+    private function validateAttachments(
+        Collection $attachments,
+        Collection $attachmentIds,
+    ): void {
+
+        /*
+    |--------------------------------------------------------------------------
+    | Attachment Not Found
+    |--------------------------------------------------------------------------
+    */
+
+        if ($attachments->count() !== $attachmentIds->count()) {
+
+            abort(
+                422,
+                'One or more attachments were not found.'
+            );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Validate Each Attachment
+    |--------------------------------------------------------------------------
+    */
+
+        foreach ($attachments as $attachment) {
+
+            /*
+        |--------------------------------------------------------------------------
+        | Expired Attachment
+        |--------------------------------------------------------------------------
+        */
+
+            if (
+                $attachment->expired_at &&
+                $attachment->expired_at->isPast()
+            ) {
+
+                abort(
+                    422,
+                    "Attachment '{$attachment->original_filename}' has expired."
+                );
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Deleted Attachment
+        |--------------------------------------------------------------------------
+        */
+
+            if ($attachment->deleted_at) {
+
+                abort(
+                    422,
+                    "Attachment '{$attachment->original_filename}' is no longer available."
+                );
+            }
+        }
     }
 }
